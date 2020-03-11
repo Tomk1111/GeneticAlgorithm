@@ -72,18 +72,55 @@ public class is17222761 extends JFrame {
 	
 	public static int[][] parseInputFile()
 	{
-		//ask for destination to input file
-		//open it & read it in
-		//largest value = N (very important)
-		//
+		int n=0;
+		int i=0;
+		ArrayList<ArrayList<Integer>> rowValues = new ArrayList<ArrayList<Integer>>();
+		rowValues.add(new ArrayList<Integer>());
+		rowValues.add(new ArrayList<Integer>());
+		String[] rowValuesString = new String [2];
+		try {
+			File myObj = new File("input.txt");
+			Scanner myReader = new Scanner(myObj);
+			while (myReader.hasNextLine()) {
+				String data = myReader.nextLine();
+				rowValuesString = data.split(" ");
+				rowValues.get(0).add(Integer.parseInt(rowValuesString[0]));
+				rowValues.get(1).add(Integer.parseInt(rowValuesString[1]));
+				if(rowValues.get(0).get(i) > n)
+					n=rowValues.get(0).get(i);
+				if(rowValues.get(1).get(i) > n)
+					n=rowValues.get(1).get(i);
+				i++;
+			}
+			myReader.close();
+		} catch (FileNotFoundException e) {
+			System.out.println("An error occurred.");
+			e.printStackTrace();
+		}
+		n++;
+		int[][] adjacencyMatrix = new int[n][n];
+		for(int j=0;j < rowValues.get(0).size(); j++) {
+			adjacencyMatrix[rowValues.get(0).get(j)][rowValues.get(1).get(j)]=1;
+		}
+		return adjacencyMatrix;
 	}
 	
 	public static void printAdjacency(int[][]adjacencyMatrix)
 	{
-		
+		for(int i=0; i < adjacencyMatrix.length; i++)
+			System.out.print("\t"+i);
+		System.out.print("\n");
+		for(int i=0; i < adjacencyMatrix.length; i++) {
+			System.out.print(i+"\t");
+			for(int j=0; j < adjacencyMatrix[0].length; j++) {
+				System.out.print(adjacencyMatrix[i][j]+"\t");
+			}
+			System.out.print("\n");
+		}
 	}
 	
 	public static void main (String [] args) {
-		
+		parseInputFile();
+		printAdjacency(parseInputFile());
 	}
 }

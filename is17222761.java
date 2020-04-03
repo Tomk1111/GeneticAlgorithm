@@ -101,6 +101,7 @@ public class is17222761 extends JFrame {
 		int[][] adjacencyMatrix = new int[n][n];
 		for(int j=0;j < rowValues.get(0).size(); j++) {
 			adjacencyMatrix[rowValues.get(0).get(j)][rowValues.get(1).get(j)]=1;
+			adjacencyMatrix[rowValues.get(1).get(j)][rowValues.get(0).get(j)]=1;
 		}
 		return adjacencyMatrix;
 	}

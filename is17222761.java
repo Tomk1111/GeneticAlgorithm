@@ -21,10 +21,10 @@ public class is17222761 extends JFrame {
 	private double chunk;
 	private int[][] currentPopulation;
 	private int[][] nextPopulation;
-	private int populationSize;
-	private int numberOfGeneration;
-	private int crossoverRate;
-	private int MutationRate;
+	private static int populationSize;
+	private static int numberOfGeneration;
+	private static int crossoverRate;
+	private static int mutationRate;
 	
 	public is17222761(int[][] adjacencyMatrix, int[] ordering, int numberOfVertices) {
 		this.adjacencyMatrix = adjacencyMatrix;
@@ -55,17 +55,18 @@ public class is17222761 extends JFrame {
 	}
 	
 	//returns a positive integer
-	public static int getPositiveInput(String message) {
+	public static int getPositiveInput(String message, String errorMessage, int greaterThan, int lessThan) {
 		int input;
 		while(true) {
 			String code = JOptionPane.showInputDialog(null, message);
 			try {
 				input = Integer.parseInt(code);
-				if(input > 0)
+				if(input > greaterThan && input < lessThan)
 					return input;
+				message = errorMessage + "\n" + message;
 			}
 			catch(Exception e) {
-				message = "Error: input must be a positive integer\n" + message;
+				message = errorMessage + "\n" + message;
 			}
 		}
 	}
@@ -121,7 +122,18 @@ public class is17222761 extends JFrame {
 	}
 	
 	public static void main (String [] args) {
+		String message = "Mutation rate: Please enter a positive integer in the range [0,100]";
 		parseInputFile();
 		printAdjacency(parseInputFile());
+		populationSize=getPositiveInput("Population size: Please enter a positive integer", "Error: input must be a positive integer", 0, Integer.MAX_VALUE);
+		numberOfGeneration=getPositiveInput("Number of generations: Please enter a positive integer", "Error: input must be a positive integer", 0, Integer.MAX_VALUE);
+		crossoverRate=getPositiveInput("Crossover rate: Please enter a positive integer in the range [0,100]", "Error: input must be a positive integer between [0,100]", -1, 101);
+		while(true) {
+			mutationRate=getPositiveInput(message, "Error: input must be a positive integer between [0,100]", -1, 101);
+			if((crossoverRate + mutationRate) < 101)
+				break;
+			else
+				message="The sum of crossover rate and mutation rate cannot exceed 100, please try again";
+		}
 	}
 }

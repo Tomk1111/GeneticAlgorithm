@@ -19,12 +19,13 @@ public class is17222761 extends JFrame {
 	private int numberOfVertices;
 	private int[] ordering;
 	private double chunk;
-	private int[][] currentPopulation;
-	private int[][] nextPopulation;
+	private static int[][] currentPopulation;
+	private static int[][] nextPopulation;
 	private static int populationSize;
 	private static int numberOfGeneration;
 	private static int crossoverRate;
 	private static int mutationRate;
+	private static int n = 0;
 	
 	public is17222761(int[][] adjacencyMatrix, int[] ordering, int numberOfVertices) {
 		this.adjacencyMatrix = adjacencyMatrix;
@@ -73,7 +74,6 @@ public class is17222761 extends JFrame {
 	
 	public static int[][] parseInputFile()
 	{
-		int n=0;
 		int i=0;
 		ArrayList<ArrayList<Integer>> rowValues = new ArrayList<ArrayList<Integer>>();
 		rowValues.add(new ArrayList<Integer>());
@@ -135,5 +135,7 @@ public class is17222761 extends JFrame {
 			else
 				message="The sum of crossover rate and mutation rate cannot exceed 100, please try again";
 		}
+		currentPopulation = new int[n][populationSize];
+		nextPopulation = new int[n][populationSize];
 	}
 }

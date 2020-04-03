@@ -121,9 +121,33 @@ public class is17222761 extends JFrame {
 		}
 	}
 	
+	public static void printOrderings(int[][]adjacencyMatrix)
+	{
+		System.out.print("\n");
+		for(int i=0; i < adjacencyMatrix.length; i++) {
+			System.out.print("Ordering "+ (i+1) + ": ");
+			for(int j=0; j < adjacencyMatrix[0].length; j++) {
+				System.out.print(adjacencyMatrix[i][j]+"\t");
+			}
+			System.out.print("\n");
+		}
+	}
+	
+	public static void generateFirstGen() {
+		ArrayList<Integer> ordering = new ArrayList<Integer>();
+		for(int i=0; i < currentPopulation[0].length; i++) {
+			ordering.add(i);
+		}
+		for(int i=0; i < currentPopulation.length; i++) {
+			Collections.shuffle(ordering);
+			for(int j=0; j< currentPopulation[i].length; j++) {
+				currentPopulation[i][j]=ordering.get(j);
+			}
+		}
+	}
+	
 	public static void main (String [] args) {
 		String message = "Mutation rate: Please enter a positive integer in the range [0,100]";
-		parseInputFile();
 		printAdjacency(parseInputFile());
 		populationSize=getPositiveInput("Population size: Please enter a positive integer", "Error: input must be a positive integer", 0, Integer.MAX_VALUE);
 		numberOfGeneration=getPositiveInput("Number of generations: Please enter a positive integer", "Error: input must be a positive integer", 0, Integer.MAX_VALUE);
@@ -135,7 +159,9 @@ public class is17222761 extends JFrame {
 			else
 				message="The sum of crossover rate and mutation rate cannot exceed 100, please try again";
 		}
-		currentPopulation = new int[n][populationSize];
-		nextPopulation = new int[n][populationSize];
+		currentPopulation = new int[populationSize][n];
+		nextPopulation = new int[populationSize][n];
+		generateFirstGen();
+		printOrderings(currentPopulation);
 	}
 }

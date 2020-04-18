@@ -35,7 +35,7 @@ public class is17222761 extends JFrame {
         this.adjacencyMatrix = adjacencyMatrix;
         this.ordering = ordering;
         this.numberOfVertices = numberOfVertices;
-        //this.chunk = (Math.PI * 2) / ((double) numberOfVertices);
+        this.chunk = (Math.PI * 2) / ((double) numberOfVertices);
         setTitle(TITLE);
         setSize(WIDTH, HEIGHT);
         setVisible(true);

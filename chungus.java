@@ -76,13 +76,13 @@ public class chungus extends JFrame {
         public void actionPerformed(ActionEvent e) {
             if(e.getActionCommand().equals("Next Generation")) {
                 generateNextGen();
-				printOrderings(genOrders);
+				//printOrderings(genOrders);
                 OrderingCost o = genOrders.get(0);
                 gui.update(o, o.getCost(), ++currentGeneration);
             } else if(e.getActionCommand().equals("Last Generation")) {
                 for(;currentGeneration < numberOfGeneration; ++currentGeneration) {
                     generateNextGen();
-					printOrderings(genOrders);
+					//printOrderings(genOrders);
                 }
                 OrderingCost o = genOrders.get(0);
                 gui.update(o, o.getCost(), currentGeneration);

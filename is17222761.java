@@ -77,17 +77,25 @@ public class is17222761 extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             if(e.getActionCommand().equals("Next Generation")) {
-                generateNextGen();
+                long startTime = System.nanoTime();
+				generateNextGen();
+				long endTime = System.nanoTime();
+				long duration = (endTime - startTime);
+				duration=duration/1000000; //Milliseconds
 				//printOrderings(genOrders);
                 OrderingCost o = genOrders.get(0);
-                gui.update(o,o,o.getCost(), o.getCost(), ++currentGeneration);
+                gui.update(o,o,o.getCost(), o.getCost(), ++currentGeneration, duration,duration);
             } else if(e.getActionCommand().equals("Last Generation")) {
+				long startTime = System.nanoTime();
                 for(;currentGeneration < numberOfGeneration; ++currentGeneration) {
                     generateNextGen();
 					//printOrderings(genOrders);
                 }
+				long endTime = System.nanoTime();
+				long duration = (endTime - startTime);
+				duration=duration/1000000; //Milliseconds
                 OrderingCost o = genOrders.get(0);
-                gui.update(o,o,o.getCost(), o.getCost(),currentGeneration);
+                gui.update(o,o,o.getCost(), o.getCost(),currentGeneration,duration,duration);
             }
         }
     }
@@ -454,16 +462,21 @@ public class is17222761 extends JFrame {
 		private JPanel topPanelGraphOne;
 		private JPanel topPanelGraphTwo;
 		private JPanel centerPanelButtons;
+		
 		private Painter graphPainter;
 		private JLabel orderingLabel;
 		private JLabel fitnessNameLabel;
 		private JLabel currentGenerationLabel;
 		private JLabel bestOrderingFitnessCost;
+		private JLabel timeToCalculate;
+		
 		private Painter graphPainter2;
 		private JLabel orderingLabel2;
 		private JLabel fitnessNameLabel2;
 		private JLabel currentGenerationLabel2;
 		private JLabel bestOrderingFitnessCost2;
+		private JLabel timeToCalculate2;
+		
 		private JButton generateNextPopulationButton;
 		private JButton generateFinalPopulationButton;
 
@@ -480,7 +493,8 @@ public class is17222761 extends JFrame {
 			setVisible(true);
 		}
 
-		public void update(OrderingCost ordering,OrderingCost ordering2, double fitness,double fitness2, int generation) {
+		public void update(OrderingCost ordering,OrderingCost ordering2, double fitness,double fitness2, int generation
+						,long time1, long time2) {
 			orderingLabel.setText("Current best ordering: " + ordering.toString2());
 			currentGenerationLabel.setText("Current generation: " + generation);
 			bestOrderingFitnessCost.setText("Ordering Fitness: " + fitness);
@@ -488,6 +502,8 @@ public class is17222761 extends JFrame {
 			orderingLabel2.setText("Current best ordering: " + ordering2.toString2());
 			currentGenerationLabel2.setText("Current generation: " + generation);
 			bestOrderingFitnessCost2.setText("Ordering Fitness: " + fitness2);
+			timeToCalculate.setText("Time: "+time1+" milliseconds");
+			timeToCalculate2.setText("Time: "+time2+" milliseconds");
 			graphPainter2.setOrdering(ordering2);
 			repaint();
 		}
@@ -504,12 +520,14 @@ public class is17222761 extends JFrame {
 			generateNextPopulationButton = new JButton("Next Generation");
 			generateFinalPopulationButton = new JButton("Last Generation");
 			fitnessNameLabel = new JLabel("Fitness Function: Sum of Edge Lenghts");
+			timeToCalculate = new JLabel("Time: 0 milliseconds");
 			
 			orderingLabel2 = new JLabel("Current best ordering: "+
 					bestOrdering2.toString2());
 			currentGenerationLabel2 = new JLabel("Current generation: 0");
 			bestOrderingFitnessCost2 = new JLabel("Ordering Fitness: " + bestOrdering2.getCost());
 			fitnessNameLabel2 = new JLabel("Fitness Function: OTHER FITNESS FUNCTION");
+			timeToCalculate2 = new JLabel("Time: 0 milliseconds");
 
 			graphPainter = new Painter(bestOrdering,chunk);
 			graphPainter2 = new Painter(bestOrdering2,chunk);
@@ -545,6 +563,8 @@ public class is17222761 extends JFrame {
 			topPanelGraphOne.add(Box.createVerticalGlue());
 			topPanelGraphOne.add(bestOrderingFitnessCost);
 			topPanelGraphOne.add(Box.createVerticalGlue());
+			topPanelGraphOne.add(timeToCalculate);
+			topPanelGraphOne.add(Box.createVerticalGlue());
 			topPanelGraphOne.add(graphPainter);
 			
 			topPanelGraphTwo.setLayout(new BoxLayout(topPanelGraphTwo, BoxLayout.Y_AXIS));
@@ -557,6 +577,8 @@ public class is17222761 extends JFrame {
 			topPanelGraphTwo.add(currentGenerationLabel2);
 			topPanelGraphTwo.add(Box.createVerticalGlue());
 			topPanelGraphTwo.add(bestOrderingFitnessCost2);
+			topPanelGraphTwo.add(Box.createVerticalGlue());
+			topPanelGraphTwo.add(timeToCalculate2);
 			topPanelGraphTwo.add(Box.createVerticalGlue());
 			topPanelGraphTwo.add(graphPainter2);
 

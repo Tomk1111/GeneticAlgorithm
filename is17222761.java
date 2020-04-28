@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.Line2D;
 import java.io.*;
 import java.util.*;
 import javax.swing.JFrame;
@@ -20,6 +21,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.util.List;
 
 /* 
  * Thomas Kiely - 17185203
@@ -48,6 +50,8 @@ public class is17222761 extends JFrame {
 	private static ArrayList<Vertice> verts = new ArrayList<Vertice>();
 	private static ArrayList<OrderingCost> genOrders = new ArrayList<OrderingCost>(); //used for fitness function 1
 	private static ArrayList<OrderingCost> nextGenOrders = new ArrayList<OrderingCost>(); //used for fitnes function 1
+	private static ArrayList<OrderingCost> genOrders2 = new ArrayList<OrderingCost>(); //used for fitness function 2
+	private static ArrayList<OrderingCost> nextGenOrders2 = new ArrayList<OrderingCost>(); //used for fitnes function 2
 	
 	public static void main (String [] args) {
 		String message = "Mutation rate: Please enter a positive integer in the range [0,100]";
@@ -68,7 +72,7 @@ public class is17222761 extends JFrame {
 		generateFirstGen();
 		printOrderings(genOrders);
 		//generateNextGen();
-		gui = new GUI(genOrders.get(0),genOrders.get(0),currentGeneration,chunk,new ButtonListener());
+		gui = new GUI(genOrders.get(0),genOrders2.get(0),currentGeneration,chunk,new ButtonListener());
 	}
 	
 	static class ButtonListener implements ActionListener {
@@ -84,7 +88,8 @@ public class is17222761 extends JFrame {
 				duration=duration/1000000; //Milliseconds
 				//printOrderings(genOrders);
                 OrderingCost o = genOrders.get(0);
-                gui.update(o,o,o.getCost(), o.getCost(), ++currentGeneration, duration,duration);
+                OrderingCost o2 = genOrders2.get(0);
+                gui.update(o,o2,o.getCost(), o2.getCost(), ++currentGeneration, duration,duration);
             } else if(e.getActionCommand().equals("Last Generation")) {
 				long startTime = System.nanoTime();
                 for(;currentGeneration < numberOfGeneration; ++currentGeneration) {
@@ -95,7 +100,8 @@ public class is17222761 extends JFrame {
 				long duration = (endTime - startTime);
 				duration=duration/1000000; //Milliseconds
                 OrderingCost o = genOrders.get(0);
-                gui.update(o,o,o.getCost(), o.getCost(),currentGeneration,duration,duration);
+                OrderingCost o2 = genOrders2.get(0);
+                gui.update(o,o2,o.getCost(), o2.getCost(),currentGeneration,duration,duration);
             }
         }
     }
@@ -125,7 +131,7 @@ public class is17222761 extends JFrame {
 		rowValues.add(new ArrayList<Integer>());
 		String[] rowValuesString = new String [2];
 		try {
-			File myObj = new File("input.txt");
+			File myObj = new File("src/input.txt");
 			Scanner myReader = new Scanner(myObj);
 			while (myReader.hasNextLine()) {
 				String data = myReader.nextLine();
@@ -181,17 +187,155 @@ public class is17222761 extends JFrame {
 	}
 	
 	public static void generateFirstGen() {
+		ArrayList<Vertice> testList = new ArrayList<>();
+		testList.add(verts.get(0));
+		testList.add(verts.get(4));
+		testList.add(verts.get(5));
+		testList.add(verts.get(12));
+		testList.add(verts.get(10));
+		testList.add(verts.get(8));
+		testList.add(verts.get(13));
+		testList.add(verts.get(2));
+		testList.add(verts.get(11));
+		testList.add(verts.get(1));
+		testList.add(verts.get(7));
+		testList.add(verts.get(9));
+		testList.add(verts.get(16));
+		testList.add(verts.get(17));
+		testList.add(verts.get(15));
+		testList.add(verts.get(3));
+		testList.add(verts.get(14));
+		testList.add(verts.get(6));
 		for(int i=0; i <populationSize;i++)
 		{
-			Collections.shuffle(verts);
+//			Collections.shuffle(verts);
 			OrderingCost ordering = new OrderingCost((ArrayList)verts.clone(),0);
 			ordering.setCost(fitnessFunk(ordering));
 			genOrders.add(ordering);
+			OrderingCost ordering2 = new OrderingCost((ArrayList)testList.clone(),0);
+			ordering2.setCost(timGAFunk(ordering2));
+			genOrders2.add(ordering2);
 		}
 		orderOrderings();
 		removeBottomThird();
 	}
-	
+
+
+
+	//https://www.emis.de/journals/DM/v92/art5.pdf
+	public static double timGAFunk(OrderingCost ordering) {
+		double cost = 0;
+		double tmpDist = 0;
+		double minDist = 1;
+		double minDistSum = 0;
+		double minNodeDist = 1;
+		double minEdgeLen = 0;
+		int totalEdgeCrossings=0;
+		double minNodeDistSum=0;
+		Map<Integer, double[]> coordinates = ordering.generateCoordinates(chunk);
+		for(int i=0; i<ordering.getOrdering().size();i++)
+		{
+			Vertice vertOne = ordering.getOrdering().get(i);
+			ArrayList<Integer> connections = vertOne.getConnections();
+			for(Integer vertNumber : connections)
+			{
+				if(vertOne.getNumber() < vertNumber)
+				{
+
+					Vertice v=null;
+					for(int loop=0;loop<ordering.getOrdering().size();loop++) {
+						if(vertNumber == ordering.getOrdering().get(loop).getNumber())
+							v=ordering.getOrdering().get(loop);
+					}
+					double[] vertX = coordinates.get(vertOne.getNumber());
+					double[] vertY = coordinates.get(v.getNumber());
+					tmpDist = calculateDistance(vertX[0], vertX[1], vertY[0], vertY[1]);
+					minDist = Math.min(tmpDist, minDist);
+					minNodeDist = Math.min(minNodeDist, tmpDist);
+
+				}
+				minDistSum += minDist;
+			}
+		}
+
+		minNodeDistSum = (populationSize * Math.pow(minNodeDist, 2));
+		double deviation = 0;
+
+		for(int i=0; i<ordering.getOrdering().size();i++)
+		{
+			Vertice vertOne = ordering.getOrdering().get(i);
+			ArrayList<Integer> connections = vertOne.getConnections();
+			for(Integer vertNumber : connections)
+			{
+				if(vertOne.getNumber() < vertNumber)
+				{
+
+					Vertice v=null;
+					for(int loop=0;loop<ordering.getOrdering().size();loop++) {
+						if(vertNumber == ordering.getOrdering().get(loop).getNumber())
+							v=ordering.getOrdering().get(loop);
+					}
+					double[] vertX = coordinates.get(vertOne.getNumber());
+					double[] vertY = coordinates.get(v.getNumber());
+					tmpDist = calculateDistance(vertX[0], vertX[1], vertY[0], vertY[1]);
+					deviation += Math.pow((tmpDist - minDist), 2);
+				}
+			}
+		}
+
+		deviation = Math.sqrt((deviation/populationSize));
+		totalEdgeCrossings = getEdgeCrossings(ordering);
+
+
+		double fitness = Math.abs((2 * minDistSum) - (2 * deviation) - (2.5 * (deviation /  minDist))
+				+ (0.25 * (populationSize * (Math.pow(minDist, 2)))) - (1 * totalEdgeCrossings));
+
+		cost = fitness;
+		System.out.println(cost + " MY COST");
+		return cost;
+	}
+
+	public static int getEdgeCrossings(OrderingCost ordering) {
+		int crossings = 0;
+		for (int i = 0;i < ordering.getOrdering().size();i++) {
+			Vertice vertice = ordering.getOrdering().get(i);
+
+			for (int tail : vertice.getConnections()) {
+				if (tail < vertice.getNumber()) continue;
+				crossings += countIntersections(vertice.getNumber(), tail, ordering);
+			}
+		}
+		return  crossings/2;
+	}
+
+	public static int countIntersections(int start, int end, OrderingCost ordering) {
+		int crossings = 0;
+		Map<Integer, double[]> coordinates = ordering.generateCoordinates(chunk);
+		double[] startPoint = coordinates.get(start);
+		double[] endPoint = coordinates.get(end);
+		for (int i = 0;i < ordering.getOrdering().size();i++) {
+			if (i == start || i == end) continue;
+
+			Vertice vertice = ordering.getOrdering().get(i);
+			for (int num : vertice.getConnections()) {
+				if (num < vertice.getNumber()) continue;
+				if (num == start || num == end) continue;
+
+				double[] compareStart = coordinates.get(vertice.getNumber());
+				double[] compareEnd = coordinates.get(num);
+				if (Line2D.linesIntersect(startPoint[0], startPoint[1], endPoint[0], endPoint[1], compareStart[0],
+						compareStart[1], compareEnd[0], compareEnd[1])) {
+					crossings++;
+				}
+			}
+		}
+		return crossings;
+	}
+
+
+
+
+
 	public static double fitnessFunk(OrderingCost ordering) {
 		double cost = 0;
 		Map<Integer, double[]> coordinates = ordering.generateCoordinates(chunk);
@@ -221,6 +365,7 @@ public class is17222761 extends JFrame {
 	
 	public static void orderOrderings() {
 		Collections.sort(genOrders);
+		Collections.sort(genOrders2);
 	}
 	
 	public static void removeBottomThird() {
@@ -228,6 +373,8 @@ public class is17222761 extends JFrame {
 		for(int i=0;i<third;i++) {
 			genOrders.remove(genOrders.size()-(i+1));
 			genOrders.add(genOrders.get(i));
+			genOrders2.remove(genOrders2.size()-(i+1));
+			genOrders2.add(genOrders2.get(i));
 		}
 	}
 	
@@ -250,6 +397,7 @@ public class is17222761 extends JFrame {
 	
 	public static void generateNextGen() {
 		Collections.shuffle(genOrders);
+		Collections.shuffle(genOrders2);
 		int pr=0;
 		pr=(int)Math.random()*101;
 		while(genOrders.size() > 0) {
@@ -273,16 +421,27 @@ public class is17222761 extends JFrame {
 		//currentGen is empty, set currentGen=nextGen and clear nextGen
 		genOrders=(ArrayList)nextGenOrders.clone();
 		nextGenOrders.clear();
+		genOrders2=(ArrayList)nextGenOrders2.clone();
+		nextGenOrders2.clear();
+
 		//order the orderings s1,s2,s3 and replace s3 with s1
 		orderOrderings();
 		removeBottomThird();
 		//printOrderings(genOrders);
+
+
+
+
 	}
 	
 	public static void reproduction(){
 		int randomIndex =(int)(Math.random()*genOrders.size());
 		nextGenOrders.add(genOrders.get(randomIndex));
 		genOrders.remove(randomIndex);
+
+		randomIndex =(int)(Math.random()*genOrders2.size());
+		nextGenOrders2.add(genOrders2.get(randomIndex));
+		genOrders2.remove(randomIndex);
 	}
 	
 	public static void crossover(){
@@ -350,6 +509,74 @@ public class is17222761 extends JFrame {
 			genOrders.remove(index1);
 			genOrders.remove(index2);
 		}
+
+
+//		PART 2
+
+		index1=0;
+		index2=0;
+		cross1 = new ArrayList<Vertice>();
+		cross2 = new ArrayList<Vertice>();
+		while(index1==index2) {
+			index1=(int)(Math.random()*genOrders2.size());
+			index2=(int)(Math.random()*genOrders2.size());
+		}
+		cp=(int)(Math.random()*(genOrders2.get(index1).getOrdering().size()-2));
+		cp++; // [1,N-2]
+		for(int i=0;i<genOrders2.get(index1).getOrdering().size();i++) {
+			if(i<cp) {
+				cross1.add(genOrders2.get(index2).getOrdering().get(i));
+				cross2.add(genOrders2.get(index1).getOrdering().get(i));
+			} else {
+				cross1.add(genOrders2.get(index1).getOrdering().get(i));
+				cross2.add(genOrders2.get(index2).getOrdering().get(i));
+			}
+		}
+		dupes = new ArrayList<Integer>();
+		notInListVertice = (ArrayList)genOrders2.get(index1).getOrdering().clone();
+		for(int i=0;i<cross1.size();i++){
+			for(int j=i+1;j<cross1.size();j++) {
+				if(cross1.get(i).getNumber()==cross1.get(j).getNumber())
+					dupes.add(j); //index of duplicate
+			}
+			for(int p=0;p<notInListVertice.size();p++)
+			{
+				if(cross1.get(i).getNumber()==notInListVertice.get(p).getNumber())
+					notInListVertice.remove(p);
+			}
+		}
+		Collections.shuffle(notInListVertice);
+		for(int i=0;i<dupes.size();i++)
+			cross1.set(dupes.get(i),notInListVertice.get(i));
+		dupes.clear();
+		notInListVertice = (ArrayList)genOrders2.get(index2).getOrdering().clone();
+		for(int i=0;i<cross2.size();i++){
+			for(int j=i+1;j<cross2.size();j++) {
+				if(cross2.get(i).getNumber()==cross2.get(j).getNumber())
+					dupes.add(j); //index of duplicate
+			}
+			for(int p=0;p<notInListVertice.size();p++)
+			{
+				if(cross2.get(i).getNumber()==notInListVertice.get(p).getNumber())
+					notInListVertice.remove(p);
+			}
+		}
+		Collections.shuffle(notInListVertice);
+		for(int i=0;i<dupes.size();i++)
+			cross2.set(dupes.get(i),notInListVertice.get(i));
+		temp1 = new OrderingCost(cross1,0);
+		temp1.setCost(timGAFunk(temp1));
+		nextGenOrders2.add(temp1);
+		temp2 = new OrderingCost(cross2,0);
+		temp2.setCost(timGAFunk(temp2));
+		nextGenOrders2.add(temp2);
+		if(index2>index1) {
+			genOrders2.remove(index2);
+			genOrders2.remove(index1);
+		} else {
+			genOrders2.remove(index1);
+			genOrders2.remove(index2);
+		}
 	}
 	
 	public static void mutation(){
@@ -374,6 +601,31 @@ public class is17222761 extends JFrame {
 		temp.setCost(fitnessFunk(temp));
 		nextGenOrders.add(temp);
 		genOrders.remove(randomIndex);
+
+
+		//PART 2
+
+		randomIndex =(int)(Math.random()*genOrders2.size());
+		index1=0;
+		index2=0;
+		while(index1==index2) {
+			index1=(int)(Math.random()*(genOrders2.get(randomIndex).getOrdering().size()));
+			index2=(int)(Math.random()*(genOrders2.get(randomIndex).getOrdering().size()));
+		}
+		mutated = new ArrayList<Vertice>();
+		for(int i =0;i<genOrders2.get(randomIndex).getOrdering().size();i++)
+		{
+			if(i==index1)
+				mutated.add(genOrders2.get(randomIndex).getOrdering().get(index2));
+			else if(i==index2)
+				mutated.add(genOrders2.get(randomIndex).getOrdering().get(index1));
+			else
+				mutated.add(genOrders2.get(randomIndex).getOrdering().get(i));
+		}
+		temp = new OrderingCost(mutated,0);
+		temp.setCost(timGAFunk(temp));
+		nextGenOrders2.add(temp);
+		genOrders2.remove(randomIndex);
 	}
 	
 	static class OrderingCost implements Comparable<OrderingCost> {

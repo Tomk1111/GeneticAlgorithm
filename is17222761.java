@@ -242,25 +242,18 @@ public class is17222761 extends JFrame {
 
 		minNodeDistSum = (ordering.getOrdering().size() * Math.pow(minNodeDist, 2));
 		double deviation = 0;
-
 		for(int i=0; i<ordering.getOrdering().size();i++)
 		{
 			Vertice vertOne = ordering.getOrdering().get(i);
-			ArrayList<Integer> connections = vertOne.getConnections();
-			for(Integer vertNumber : connections)
+			for(int j=0;j<ordering.getOrdering().size();j++)
 			{
-				if(vertOne.getNumber() < vertNumber)
+				Vertice v=ordering.getOrdering().get(j);
+				if(v.getNumber()!=vertOne.getNumber())
 				{
-
-					Vertice v=null;
-					for(int loop=0;loop<ordering.getOrdering().size();loop++) {
-						if(vertNumber == ordering.getOrdering().get(loop).getNumber())
-							v=ordering.getOrdering().get(loop);
-					}
 					double[] vertX = coordinates.get(vertOne.getNumber());
 					double[] vertY = coordinates.get(v.getNumber());
 					tmpDist = calculateDistance(vertX[0], vertX[1], vertY[0], vertY[1]);
-					deviation += Math.pow((tmpDist - minDist), 2);
+					deviation += Math.pow((tmpDist - minNodeDist), 2);
 				}
 			}
 		}

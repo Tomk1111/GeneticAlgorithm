@@ -1,27 +1,12 @@
 import javax.swing.*;
-import java.awt.*;
-import java.awt.geom.Line2D;
-import java.io.*;
-import java.util.*;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JLabel;
-import javax.swing.JButton;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.Box;
-import javax.swing.*;
-import javax.swing.JOptionPane;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import javax.swing.border.Border;
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.util.List;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.geom.Line2D;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.*;
 
 /*
  * Thomas Kiely - 17185203
@@ -137,7 +122,7 @@ public class is17222761 extends JFrame {
 		rowValues.add(new ArrayList<Integer>());
 		String[] rowValuesString = new String [2];
 		try {
-			File myObj = new File("input.txt");
+			File myObj = new File("src/input.txt");
 			Scanner myReader = new Scanner(myObj);
 			while (myReader.hasNextLine()) {
 				String data = myReader.nextLine();
@@ -253,7 +238,7 @@ public class is17222761 extends JFrame {
 					double[] vertX = coordinates.get(vertOne.getNumber());
 					double[] vertY = coordinates.get(v.getNumber());
 					tmpDist = calculateDistance(vertX[0], vertX[1], vertY[0], vertY[1]);
-					deviation += Math.pow((tmpDist - minNodeDist), 2);
+					deviation += Math.pow((tmpDist - minDist), 2);
 				}
 			}
 		}
@@ -386,12 +371,14 @@ public class is17222761 extends JFrame {
 			if(crossoverRate >= pr && genOrders.size() > 1)
 			{
 				//do crossover
-				crossover();
+				genOrders = crossover(genOrders, 1);
+				genOrders2 = crossover(genOrders2, 2);
 			}
 			else if(crossoverRate<=pr && pr<=(crossoverRate+mutationRate))
 			{
 				//do mutation
-				mutation();
+				genOrders = mutation(genOrders, 1);
+				genOrders2 = mutation(genOrders2, 2);
 			}
 			else if((crossoverRate==mutationRate) && crossoverRate<=pr)
 			{
@@ -425,28 +412,28 @@ public class is17222761 extends JFrame {
 		genOrders2.remove(randomIndex);
 	}
 
-	public static void crossover(){
+	public static ArrayList<OrderingCost> crossover(ArrayList<OrderingCost> list, int fitnessChoice){
 		int index1=0;
 		int index2=0;
 		ArrayList<Vertice> cross1 = new ArrayList<Vertice>();
 		ArrayList<Vertice> cross2 = new ArrayList<Vertice>();
 		while(index1==index2) {
-			index1=(int)(Math.random()*genOrders.size());
-			index2=(int)(Math.random()*genOrders.size());
+			index1=(int)(Math.random()*list.size());
+			index2=(int)(Math.random()*list.size());
 		}
-		int cp=(int)(Math.random()*(genOrders.get(index1).getOrdering().size()-2));
+		int cp=(int)(Math.random()*(list.get(index1).getOrdering().size()-2));
 		cp++; // [1,N-2]
-		for(int i=0;i<genOrders.get(index1).getOrdering().size();i++) {
+		for(int i=0;i<list.get(index1).getOrdering().size();i++) {
 			if(i<cp) {
-				cross1.add(genOrders.get(index2).getOrdering().get(i));
-				cross2.add(genOrders.get(index1).getOrdering().get(i));
+				cross1.add(list.get(index2).getOrdering().get(i));
+				cross2.add(list.get(index1).getOrdering().get(i));
 			} else {
-				cross1.add(genOrders.get(index1).getOrdering().get(i));
-				cross2.add(genOrders.get(index2).getOrdering().get(i));
+				cross1.add(list.get(index1).getOrdering().get(i));
+				cross2.add(list.get(index2).getOrdering().get(i));
 			}
 		}
 		ArrayList<Integer> dupes = new ArrayList<Integer>();
-		ArrayList<Vertice> notInListVertice = (ArrayList)genOrders.get(index1).getOrdering().clone();
+		ArrayList<Vertice> notInListVertice = (ArrayList)list.get(index1).getOrdering().clone();
 		for(int i=0;i<cross1.size();i++){
 			for(int j=i+1;j<cross1.size();j++) {
 				if(cross1.get(i).getNumber()==cross1.get(j).getNumber())
@@ -462,7 +449,7 @@ public class is17222761 extends JFrame {
 		for(int i=0;i<dupes.size();i++)
 			cross1.set(dupes.get(i),notInListVertice.get(i));
 		dupes.clear();
-		notInListVertice = (ArrayList)genOrders.get(index2).getOrdering().clone();
+		notInListVertice = (ArrayList)list.get(index2).getOrdering().clone();
 		for(int i=0;i<cross2.size();i++){
 			for(int j=i+1;j<cross2.size();j++) {
 				if(cross2.get(i).getNumber()==cross2.get(j).getNumber())
@@ -477,136 +464,69 @@ public class is17222761 extends JFrame {
 		Collections.shuffle(notInListVertice);
 		for(int i=0;i<dupes.size();i++)
 			cross2.set(dupes.get(i),notInListVertice.get(i));
-		OrderingCost temp1 = new OrderingCost(cross1,0);
-		temp1.setCost(fitnessFunk(temp1));
-		nextGenOrders.add(temp1);
-		OrderingCost temp2 = new OrderingCost(cross2,0);
-		temp2.setCost(fitnessFunk(temp2));
-		nextGenOrders.add(temp2);
-		if(index2>index1) {
-			genOrders.remove(index2);
-			genOrders.remove(index1);
-		} else {
-			genOrders.remove(index1);
-			genOrders.remove(index2);
-		}
 
 
-//		PART 2
-
-		index1=0;
-		index2=0;
-		cross1 = new ArrayList<Vertice>();
-		cross2 = new ArrayList<Vertice>();
-		while(index1==index2) {
-			index1=(int)(Math.random()*genOrders2.size());
-			index2=(int)(Math.random()*genOrders2.size());
-		}
-		cp=(int)(Math.random()*(genOrders2.get(index1).getOrdering().size()-2));
-		cp++; // [1,N-2]
-		for(int i=0;i<genOrders2.get(index1).getOrdering().size();i++) {
-			if(i<cp) {
-				cross1.add(genOrders2.get(index2).getOrdering().get(i));
-				cross2.add(genOrders2.get(index1).getOrdering().get(i));
+		if (fitnessChoice == 1) {
+			OrderingCost temp1 = new OrderingCost(cross1,0);
+			temp1.setCost(fitnessFunk(temp1));
+			nextGenOrders.add(temp1);
+			OrderingCost temp2 = new OrderingCost(cross2,0);
+			temp2.setCost(fitnessFunk(temp2));
+			nextGenOrders.add(temp2);
+			if(index2>index1) {
+				list.remove(index2);
+				list.remove(index1);
 			} else {
-				cross1.add(genOrders2.get(index1).getOrdering().get(i));
-				cross2.add(genOrders2.get(index2).getOrdering().get(i));
+				list.remove(index1);
+				list.remove(index2);
 			}
-		}
-		dupes = new ArrayList<Integer>();
-		notInListVertice = (ArrayList)genOrders2.get(index1).getOrdering().clone();
-		for(int i=0;i<cross1.size();i++){
-			for(int j=i+1;j<cross1.size();j++) {
-				if(cross1.get(i).getNumber()==cross1.get(j).getNumber())
-					dupes.add(j); //index of duplicate
-			}
-			for(int p=0;p<notInListVertice.size();p++)
-			{
-				if(cross1.get(i).getNumber()==notInListVertice.get(p).getNumber())
-					notInListVertice.remove(p);
-			}
-		}
-		Collections.shuffle(notInListVertice);
-		for(int i=0;i<dupes.size();i++)
-			cross1.set(dupes.get(i),notInListVertice.get(i));
-		dupes.clear();
-		notInListVertice = (ArrayList)genOrders2.get(index2).getOrdering().clone();
-		for(int i=0;i<cross2.size();i++){
-			for(int j=i+1;j<cross2.size();j++) {
-				if(cross2.get(i).getNumber()==cross2.get(j).getNumber())
-					dupes.add(j); //index of duplicate
-			}
-			for(int p=0;p<notInListVertice.size();p++)
-			{
-				if(cross2.get(i).getNumber()==notInListVertice.get(p).getNumber())
-					notInListVertice.remove(p);
-			}
-		}
-		Collections.shuffle(notInListVertice);
-		for(int i=0;i<dupes.size();i++)
-			cross2.set(dupes.get(i),notInListVertice.get(i));
-		temp1 = new OrderingCost(cross1,0);
-		temp1.setCost(timGAFunk(temp1));
-		nextGenOrders2.add(temp1);
-		temp2 = new OrderingCost(cross2,0);
-		temp2.setCost(timGAFunk(temp2));
-		nextGenOrders2.add(temp2);
-		if(index2>index1) {
-			genOrders2.remove(index2);
-			genOrders2.remove(index1);
 		} else {
-			genOrders2.remove(index1);
-			genOrders2.remove(index2);
+			OrderingCost temp1 = new OrderingCost(cross1,0);
+			temp1.setCost(timGAFunk(temp1));
+			nextGenOrders2.add(temp1);
+			OrderingCost temp2 = new OrderingCost(cross2,0);
+			temp2.setCost(timGAFunk(temp2));
+			nextGenOrders2.add(temp2);
+			if(index2>index1) {
+				list.remove(index2);
+				list.remove(index1);
+			} else {
+				list.remove(index1);
+				list.remove(index2);
+			}
 		}
+		return list;
 	}
 
-	public static void mutation(){
-		int randomIndex =(int)(Math.random()*genOrders.size());
+	public static ArrayList<OrderingCost> mutation(ArrayList<OrderingCost> list, int fitnessChoice){
+		int randomIndex =(int)(Math.random()*list.size());
 		int index1=0;
 		int index2=0;
 		while(index1==index2) {
-			index1=(int)(Math.random()*(genOrders.get(randomIndex).getOrdering().size()));
-			index2=(int)(Math.random()*(genOrders.get(randomIndex).getOrdering().size()));
+			index1=(int)(Math.random()*(list.get(randomIndex).getOrdering().size()));
+			index2=(int)(Math.random()*(list.get(randomIndex).getOrdering().size()));
 		}
 		ArrayList<Vertice> mutated = new ArrayList<Vertice>();
-		for(int i =0;i<genOrders.get(randomIndex).getOrdering().size();i++)
+		for(int i =0;i<list.get(randomIndex).getOrdering().size();i++)
 		{
 			if(i==index1)
-				mutated.add(genOrders.get(randomIndex).getOrdering().get(index2));
+				mutated.add(list.get(randomIndex).getOrdering().get(index2));
 			else if(i==index2)
-				mutated.add(genOrders.get(randomIndex).getOrdering().get(index1));
+				mutated.add(list.get(randomIndex).getOrdering().get(index1));
 			else
-				mutated.add(genOrders.get(randomIndex).getOrdering().get(i));
+				mutated.add(list.get(randomIndex).getOrdering().get(i));
 		}
 		OrderingCost temp = new OrderingCost(mutated,0);
-		temp.setCost(fitnessFunk(temp));
-		nextGenOrders.add(temp);
-		genOrders.remove(randomIndex);
-
-
-		//PART 2
-
-		randomIndex =(int)(Math.random()*genOrders2.size());
-		index1=0;
-		index2=0;
-		while(index1==index2) {
-			index1=(int)(Math.random()*(genOrders2.get(randomIndex).getOrdering().size()));
-			index2=(int)(Math.random()*(genOrders2.get(randomIndex).getOrdering().size()));
+		if (fitnessChoice == 1) {
+			temp.setCost(fitnessFunk(temp));
+			nextGenOrders.add(temp);
+			list.remove(randomIndex);
+		} else {
+			temp.setCost(timGAFunk(temp));
+			nextGenOrders2.add(temp);
+			list.remove(randomIndex);
 		}
-		mutated = new ArrayList<Vertice>();
-		for(int i =0;i<genOrders2.get(randomIndex).getOrdering().size();i++)
-		{
-			if(i==index1)
-				mutated.add(genOrders2.get(randomIndex).getOrdering().get(index2));
-			else if(i==index2)
-				mutated.add(genOrders2.get(randomIndex).getOrdering().get(index1));
-			else
-				mutated.add(genOrders2.get(randomIndex).getOrdering().get(i));
-		}
-		temp = new OrderingCost(mutated,0);
-		temp.setCost(timGAFunk(temp));
-		nextGenOrders2.add(temp);
-		genOrders2.remove(randomIndex);
+		return list;
 	}
 
 	static class OrderingCost implements Comparable<OrderingCost> {

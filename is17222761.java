@@ -17,9 +17,6 @@ import java.util.*;
 
 public class is17222761 extends JFrame {
 
-	private static final String TITLE = "Graph Visualisation";
-	private static final int WIDTH = 960;
-	private static final int HEIGHT = 960;
 	private static int[][] adjacencyMatrix;
 	private int[] ordering;
 	private static double chunk;
@@ -98,17 +95,18 @@ public class is17222761 extends JFrame {
 
 	//returns a positive integer
 	public static int getPositiveInput(String message, String errorMessage, int greaterThan, int lessThan) {
+		String tmp=message;
 		int input;
 		while(true) {
-			String code = JOptionPane.showInputDialog(null, message);
+			String code = JOptionPane.showInputDialog(null, tmp);
 			try {
 				input = Integer.parseInt(code);
 				if(input > greaterThan && input < lessThan)
 					return input;
-				message = errorMessage + "\n" + message;
+				tmp = errorMessage + "\n" + message;
 			}
 			catch(Exception e) {
-				message = errorMessage + "\n" + message;
+				tmp = errorMessage + "\n" + message;
 			}
 		}
 	}
@@ -121,7 +119,7 @@ public class is17222761 extends JFrame {
 		rowValues.add(new ArrayList<Integer>());
 		String[] rowValuesString = new String [2];
 		try {
-			File myObj = new File("input.txt");
+			File myObj = new File("src/input.txt");
 			Scanner myReader = new Scanner(myObj);
 			while (myReader.hasNextLine()) {
 				String data = myReader.nextLine();

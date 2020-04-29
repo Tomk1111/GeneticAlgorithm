@@ -57,6 +57,11 @@ public class is17222761 extends JFrame {
 	public static int bestGeneration2 = 0;
 	public static double bestScore1;
 	public static double bestScore2;
+	static long duration1=0;
+	static long duration2=0;
+	static double total1=0;
+	static double total2=0;
+	static double milliseconds=1000000.0;
 
 	public static void main (String [] args) {
 		String message = "Mutation rate: Please enter a positive integer in the range [0,100]";
@@ -91,18 +96,12 @@ public class is17222761 extends JFrame {
 				//printOrderings(genOrders);
                 OrderingCost o = genOrders.get(0);
                 OrderingCost o2 = genOrders2.get(0);
-                gui.update(o,o2,o.getCost(), o2.getCost(), ++currentGeneration, o.getTime(), o2.getTime());
+                gui.update(o,o2,o.getCost(), o2.getCost(), ++currentGeneration, total1, total2);
 				}
             } else if(e.getActionCommand().equals("Last Generation")) {
-				long total1=0;
-				long total2=0;
                 for(;currentGeneration < numberOfGeneration; ++currentGeneration) {
                     generateNextGen();
-					OrderingCost o = genOrders.get(0);
-					OrderingCost o2 = genOrders2.get(0);
-					total1+=o.getTime();
-					total2+=o2.getTime();
-					//printOrderings(genOrders);
+					System.out.println(total1);
                 }
                 OrderingCost o = genOrders.get(0);
                 OrderingCost o2 = genOrders2.get(0);
@@ -192,25 +191,6 @@ public class is17222761 extends JFrame {
 	}
 	
 	public static void generateFirstGen() {
-		ArrayList<Vertice> testList = new ArrayList<>();
-		testList.add(verts.get(0));
-		testList.add(verts.get(1));
-		testList.add(verts.get(2));
-		testList.add(verts.get(3));
-		testList.add(verts.get(4));
-		testList.add(verts.get(5));
-		testList.add(verts.get(6));
-		testList.add(verts.get(7));
-		testList.add(verts.get(8));
-		testList.add(verts.get(9));
-		testList.add(verts.get(10));
-		testList.add(verts.get(11));
-		testList.add(verts.get(12));
-		testList.add(verts.get(13));
-		testList.add(verts.get(14));
-		testList.add(verts.get(15));
-		testList.add(verts.get(16));
-		testList.add(verts.get(17));
 		for(int i=0; i <populationSize;i++)
 		{
 			Collections.shuffle(verts);
@@ -291,9 +271,8 @@ public class is17222761 extends JFrame {
 
 		cost = fitness;
 		long endTime = System.nanoTime();
-		long duration = (endTime - startTime);
-		duration=duration/1000000; //Milliseconds
-		ordering.setTime(duration);
+		duration2 = (endTime - startTime);
+		total2+=(double)duration2/milliseconds; //Milliseconds
 		return cost;
 	}
 
@@ -364,9 +343,8 @@ public class is17222761 extends JFrame {
 			}
 		}
 		long endTime = System.nanoTime();
-		long duration = (endTime - startTime);
-		duration=duration/1000000; //Milliseconds
-		ordering.setTime(duration);
+		duration1 = (endTime - startTime);
+		total1+=(double)duration1/milliseconds; //Milliseconds
 		return cost;
 	}
 	
@@ -639,7 +617,6 @@ public class is17222761 extends JFrame {
 	static class OrderingCost implements Comparable<OrderingCost> {
 		ArrayList<Vertice> ordering = new ArrayList<Vertice>();
         double cost;
-		long time;
 
         public OrderingCost(ArrayList<Vertice> ordering, double cost) {
             this.ordering = ordering;
@@ -653,14 +630,6 @@ public class is17222761 extends JFrame {
 		
 		public void setCost(double cost) {
 			this.cost=cost;
-		}
-		
-		public void setTime(long time) {
-			this.time=time;
-		}
-		
-		public long getTime() {
-			return this.time;
 		}
 		
 		public ArrayList<Vertice> getOrdering() {
@@ -765,7 +734,7 @@ public class is17222761 extends JFrame {
 		}
 
 		public void update(OrderingCost ordering,OrderingCost ordering2, double fitness,double fitness2, int generation
-						,long time1, long time2) {
+						,double time1, double time2) {
 			orderingLabel.setText("Current best ordering: " + ordering.toString2());
 			currentGenerationLabel.setText("Current generation: " + generation);
 			bestOrderingFitnessCost.setText("Ordering Fitness: " + fitness);
@@ -809,7 +778,7 @@ public class is17222761 extends JFrame {
 			currentGenerationLabel2 = new JLabel("Current generation: 0");
 			bestOrderingFitnessCost2 = new JLabel("Ordering Fitness: " + bestOrdering2.getCost());
 			bestScore2 = bestOrdering2.getCost();
-			fitnessNameLabel2 = new JLabel("Fitness Function: OTHER FITNESS FUNCTION");
+			fitnessNameLabel2 = new JLabel("Fitness Function: TimGA");
 			timeToCalculate2 = new JLabel("Time: 0 milliseconds");
 
 			graphPainter = new Painter(bestOrdering,chunk);

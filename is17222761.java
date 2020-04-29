@@ -23,15 +23,15 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.util.List;
 
-/* 
+/*
  * Thomas Kiely - 17185203
  * Sean Morrissey - 17222761
  * Paul Murphy - 17198046
- * Art Maguire: 16150201 
-*/
+ * Art Maguire: 16150201
+ */
 
 public class is17222761 extends JFrame {
-	
+
 	private static final String TITLE = "Graph Visualisation";
 	private static final int WIDTH = 960;
 	private static final int HEIGHT = 960;
@@ -63,6 +63,8 @@ public class is17222761 extends JFrame {
 	static double total2=0;
 	static double milliseconds=1000000.0;
 
+
+
 	public static void main (String [] args) {
 		String message = "Mutation rate: Please enter a positive integer in the range [0,100]";
 		adjacencyMatrix=parseInputFile();
@@ -86,30 +88,30 @@ public class is17222761 extends JFrame {
 	}
 
 	static class ButtonListener implements ActionListener {
-        public ButtonListener(){};
+		public ButtonListener(){};
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            if(e.getActionCommand().equals("Next Generation")) {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if(e.getActionCommand().equals("Next Generation")) {
 				if (currentGeneration<numberOfGeneration){
-				generateNextGen();
-				//printOrderings(genOrders);
-                OrderingCost o = genOrders.get(0);
-                OrderingCost o2 = genOrders2.get(0);
-                gui.update(o,o2,o.getCost(), o2.getCost(), ++currentGeneration, total1, total2);
+					generateNextGen();
+					//printOrderings(genOrders);
+					OrderingCost o = genOrders.get(0);
+					OrderingCost o2 = genOrders2.get(0);
+					gui.update(o,o2,o.getCost(), o2.getCost(), ++currentGeneration, total1, total2);
 				}
-            } else if(e.getActionCommand().equals("Last Generation")) {
-                for(;currentGeneration < numberOfGeneration; ++currentGeneration) {
-                    generateNextGen();
+			} else if(e.getActionCommand().equals("Last Generation")) {
+				for(;currentGeneration < numberOfGeneration; ++currentGeneration) {
+					generateNextGen();
 					System.out.println(total1);
-                }
-                OrderingCost o = genOrders.get(0);
-                OrderingCost o2 = genOrders2.get(0);
-                gui.update(o,o2,o.getCost(), o2.getCost(),currentGeneration,total1, total2);
-            }
-        }
-    }
-	
+				}
+				OrderingCost o = genOrders.get(0);
+				OrderingCost o2 = genOrders2.get(0);
+				gui.update(o,o2,o.getCost(), o2.getCost(),currentGeneration,total1, total2);
+			}
+		}
+	}
+
 	//returns a positive integer
 	public static int getPositiveInput(String message, String errorMessage, int greaterThan, int lessThan) {
 		int input;
@@ -126,7 +128,7 @@ public class is17222761 extends JFrame {
 			}
 		}
 	}
-	
+
 	public static int[][] parseInputFile()
 	{
 		int i=0;
@@ -161,7 +163,7 @@ public class is17222761 extends JFrame {
 		}
 		return adjacencyMatrix;
 	}
-	
+
 	public static void printAdjacency(int[][]adjacencyMatrix)
 	{
 		for(int i=0; i < adjacencyMatrix.length; i++)
@@ -175,9 +177,9 @@ public class is17222761 extends JFrame {
 			System.out.print("\n");
 		}
 	}
-	
+
 	public static void printOrderings(ArrayList<OrderingCost> o)
-	{		
+	{
 		for(int i=0; i < o.size(); i++)
 		{
 			for(int j=0; j<o.get(i).getOrdering().size();j++)
@@ -189,7 +191,7 @@ public class is17222761 extends JFrame {
 		}
 		System.out.print("\n");
 	}
-	
+
 	public static void generateFirstGen() {
 		for(int i=0; i <populationSize;i++)
 		{
@@ -266,7 +268,7 @@ public class is17222761 extends JFrame {
 		deviation = Math.sqrt((deviation/populationSize));
 		totalEdgeCrossings = getEdgeCrossings(ordering);
 
-		double fitness = Math.abs((2 * minDistSum) - (2 * deviation) - (2.5 * (deviation /  minNodeDistSum)) 
+		double fitness = Math.abs((2 * minDistSum) - (2 * deviation) - (2.5 * (deviation /  minNodeDistSum))
 				+ (0.25 * (populationSize * (Math.pow(minNodeDistSum, 2)))) + (1 * totalEdgeCrossings));
 
 		cost = fitness;
@@ -329,7 +331,7 @@ public class is17222761 extends JFrame {
 			{
 				if(vertOne.getNumber() < vertNumber)
 				{
-					
+
 					Vertice v=null;
 					for(int loop=0;loop<ordering.getOrdering().size();loop++) {
 						if(vertNumber == ordering.getOrdering().get(loop).getNumber())
@@ -347,12 +349,12 @@ public class is17222761 extends JFrame {
 		total1+=(double)duration1/milliseconds; //Milliseconds
 		return cost;
 	}
-	
+
 	public static void orderOrderings() {
 		Collections.sort(genOrders);
 		Collections.sort(genOrders2);
 	}
-	
+
 	public static void removeBottomThird() {
 		int third = ((int)(Math.ceil(populationSize/3.0)));
 		for(int i=0;i<third;i++) {
@@ -363,11 +365,11 @@ public class is17222761 extends JFrame {
 			//genOrders2.set(i,genOrders2.get(genOrders2.size()-(i+1)));
 		}
 	}
-	
+
 	public static double calculateDistance(double x1, double y1, double x2, double y2) {
 		return Math.sqrt(Math.pow(x2 - x1,2) + Math.pow(y2 - y1,2));
 	}
-	
+
 	public static void fillVerts () {
 		ArrayList<Integer>connections=new ArrayList<Integer>();
 		for(int i=0;i<n;i++) {
@@ -380,7 +382,7 @@ public class is17222761 extends JFrame {
 			connections.clear();
 		}
 	}
-	
+
 	public static void generateNextGen() {
 		Collections.shuffle(genOrders);
 		Collections.shuffle(genOrders2);
@@ -419,7 +421,7 @@ public class is17222761 extends JFrame {
 
 
 	}
-	
+
 	public static void reproduction(){
 		int randomIndex =(int)(Math.random()*genOrders.size());
 		nextGenOrders.add(genOrders.get(randomIndex));
@@ -429,7 +431,7 @@ public class is17222761 extends JFrame {
 		nextGenOrders2.add(genOrders2.get(randomIndex));
 		genOrders2.remove(randomIndex);
 	}
-	
+
 	public static void crossover(){
 		int index1=0;
 		int index2=0;
@@ -564,7 +566,7 @@ public class is17222761 extends JFrame {
 			genOrders2.remove(index2);
 		}
 	}
-	
+
 	public static void mutation(){
 		int randomIndex =(int)(Math.random()*genOrders.size());
 		int index1=0;
@@ -613,49 +615,49 @@ public class is17222761 extends JFrame {
 		nextGenOrders2.add(temp);
 		genOrders2.remove(randomIndex);
 	}
-	
+
 	static class OrderingCost implements Comparable<OrderingCost> {
 		ArrayList<Vertice> ordering = new ArrayList<Vertice>();
-        double cost;
+		double cost;
 
-        public OrderingCost(ArrayList<Vertice> ordering, double cost) {
-            this.ordering = ordering;
-            this.cost = cost;
-        }
+		public OrderingCost(ArrayList<Vertice> ordering, double cost) {
+			this.ordering = ordering;
+			this.cost = cost;
+		}
 
-        @Override
-        public int compareTo(OrderingCost oc) {
-            return Double.compare(this.cost, oc.cost);
-        }
-		
+		@Override
+		public int compareTo(OrderingCost oc) {
+			return Double.compare(this.cost, oc.cost);
+		}
+
 		public void setCost(double cost) {
 			this.cost=cost;
 		}
-		
+
 		public ArrayList<Vertice> getOrdering() {
 			return ordering;
 		}
-		
+
 		public double getCost() {
 			return cost;
 		}
 
-        @Override
-        public String toString() {
-            String out = "\nCost: " + cost + "\n";
-            for (Vertice i : ordering)
-                out += i.getNumber() + ", ";
-            return out;
-        }
-		
-        public String toString2() {
-            String out = "";
-            for (Vertice i : ordering)
-                out += i.getNumber() + " ";
-            return out;
-        }
-		
-		
+		@Override
+		public String toString() {
+			String out = "\nCost: " + cost + "\n";
+			for (Vertice i : ordering)
+				out += i.getNumber() + ", ";
+			return out;
+		}
+
+		public String toString2() {
+			String out = "";
+			for (Vertice i : ordering)
+				out += i.getNumber() + " ";
+			return out;
+		}
+
+
 		public Map<Integer, double[]> generateCoordinates(double chunk) {
 			Map<Integer, double[]> coordinates = new HashMap<Integer, double[]>();
 			for(int i = 0; i < ordering.size(); i++) {
@@ -665,22 +667,22 @@ public class is17222761 extends JFrame {
 			}
 			return coordinates;
 		}
-    }
-	
+	}
+
 	static class Vertice {
 		int number;
 		ArrayList<Integer> connections = new ArrayList<Integer>();
-		
+
 		public Vertice(int number, ArrayList<Integer> connections)
 		{
 			this.number=number;
 			this.connections=connections;
 		}
-		
+
 		public int getNumber() {
 			return number;
 		}
-		
+
 		public ArrayList<Integer> getConnections() {
 			return connections;
 		}
@@ -700,26 +702,28 @@ public class is17222761 extends JFrame {
 		private JPanel topPanelGraphOne;
 		private JPanel topPanelGraphTwo;
 		private JPanel centerPanelButtons;
-		
+
 		private Painter graphPainter;
 		private JLabel orderingLabel;
 		private JLabel fitnessNameLabel;
 		private JLabel currentGenerationLabel;
+		private JLabel bestGenerationLabel1;
 		private JLabel bestOrderingFitnessCost;
 		private JLabel timeToCalculate;
-		
+
 		private Painter graphPainter2;
 		private JLabel orderingLabel2;
 		private JLabel fitnessNameLabel2;
 		private JLabel currentGenerationLabel2;
 		private JLabel bestOrderingFitnessCost2;
+		private JLabel bestGenerationLabel2;
 		private JLabel timeToCalculate2;
-		
+
 		private JButton generateNextPopulationButton;
 		private JButton generateFinalPopulationButton;
 
 		public GUI(OrderingCost bestOrdering, OrderingCost bestOrdering2,
-				int generations,double chunk, ActionListener listener) {
+				   int generations,double chunk, ActionListener listener) {
 			super(TITLE);
 			this.bestOrdering=bestOrdering;
 			this.bestOrdering2=bestOrdering2;
@@ -729,12 +733,12 @@ public class is17222761 extends JFrame {
 			setDefaultCloseOperation(EXIT_ON_CLOSE);
 			initMainPanel(listener);
 			setVisible(true);
-			setExtendedState(JFrame.MAXIMIZED_BOTH); 
+			setExtendedState(JFrame.MAXIMIZED_BOTH);
 			// setUndecorated(true);
 		}
 
 		public void update(OrderingCost ordering,OrderingCost ordering2, double fitness,double fitness2, int generation
-						,double time1, double time2) {
+				,double time1, double time2) {
 			orderingLabel.setText("Current best ordering: " + ordering.toString2());
 			currentGenerationLabel.setText("Current generation: " + generation);
 			bestOrderingFitnessCost.setText("Ordering Fitness: " + fitness);
@@ -743,6 +747,7 @@ public class is17222761 extends JFrame {
 				bestGeneration1 = generation;
 				System.out.println("1 BEST GEN: " + bestGeneration1);
 			}
+			bestGenerationLabel1.setText("Best Generation: " + bestGeneration1);
 			graphPainter.setOrdering(ordering);
 			orderingLabel2.setText("Current best ordering: " + ordering2.toString2());
 			currentGenerationLabel2.setText("Current generation: " + generation);
@@ -752,6 +757,7 @@ public class is17222761 extends JFrame {
 				bestGeneration2 = generation;
 				System.out.println("2 BEST GEN: " + bestGeneration2);
 			}
+			bestGenerationLabel2.setText("Best Generation: " + bestGeneration2);
 			timeToCalculate.setText("Time: "+time1+" milliseconds");
 			timeToCalculate2.setText("Time: "+time2+" milliseconds");
 			graphPainter2.setOrdering(ordering2);
@@ -772,7 +778,7 @@ public class is17222761 extends JFrame {
 			generateFinalPopulationButton = new JButton("Last Generation");
 			fitnessNameLabel = new JLabel("Fitness Function: Sum of Edge Lenghts");
 			timeToCalculate = new JLabel("Time: 0 milliseconds");
-			
+			bestGenerationLabel1 = new JLabel("Best Generation: " + bestGeneration1);
 			orderingLabel2 = new JLabel("Current best ordering: "+
 					bestOrdering2.toString2());
 			currentGenerationLabel2 = new JLabel("Current generation: 0");
@@ -780,14 +786,14 @@ public class is17222761 extends JFrame {
 			bestScore2 = bestOrdering2.getCost();
 			fitnessNameLabel2 = new JLabel("Fitness Function: TimGA");
 			timeToCalculate2 = new JLabel("Time: 0 milliseconds");
-
+			bestGenerationLabel2 = new JLabel("Best Generation: " + bestGeneration2);
 			graphPainter = new Painter(bestOrdering,chunk);
 			graphPainter2 = new Painter(bestOrdering2,chunk);
-			
+
 			Border blackline = BorderFactory.createLineBorder(Color.black);
 			topPanelGraphOne = new JPanel();
 			topPanelGraphTwo = new JPanel();
-			
+
 			centerPanelButtons = new JPanel();
 			centerPanelButtons.setBorder(blackline);
 			centerPanelButtons.setLayout(new BoxLayout(centerPanelButtons, BoxLayout.Y_AXIS));
@@ -800,13 +806,13 @@ public class is17222761 extends JFrame {
 			centerPanelButtons.add(Box.createVerticalGlue());
 			centerPanelButtons.add(generateFinalPopulationButton);
 			centerPanelButtons.add(Box.createVerticalGlue());
-			
+
 			topPanelGraphOne.setBorder(blackline);
 			topPanelGraphTwo.setBorder(blackline);
-			
+
 			graphPainter.setBorder(blackline);
 			graphPainter2.setBorder(blackline);
-			
+
 			topPanelGraphOne.setLayout(new BoxLayout(topPanelGraphOne, BoxLayout.Y_AXIS));
 			topPanelGraphOne.setPreferredSize(new Dimension(WIDTH, 300));
 			topPanelGraphOne.setPreferredSize(new Dimension(HEIGHT, 200));
@@ -818,10 +824,12 @@ public class is17222761 extends JFrame {
 			topPanelGraphOne.add(Box.createVerticalGlue());
 			topPanelGraphOne.add(bestOrderingFitnessCost);
 			topPanelGraphOne.add(Box.createVerticalGlue());
+			topPanelGraphOne.add(bestGenerationLabel1);
+			topPanelGraphOne.add(Box.createVerticalGlue());
 			topPanelGraphOne.add(timeToCalculate);
 			topPanelGraphOne.add(Box.createVerticalGlue());
 			topPanelGraphOne.add(graphPainter);
-			
+
 			topPanelGraphTwo.setLayout(new BoxLayout(topPanelGraphTwo, BoxLayout.Y_AXIS));
 			topPanelGraphTwo.setPreferredSize(new Dimension(WIDTH, 300));
 			topPanelGraphTwo.setPreferredSize(new Dimension(HEIGHT, 200));
@@ -833,6 +841,8 @@ public class is17222761 extends JFrame {
 			topPanelGraphTwo.add(Box.createVerticalGlue());
 			topPanelGraphTwo.add(bestOrderingFitnessCost2);
 			topPanelGraphTwo.add(Box.createVerticalGlue());
+			topPanelGraphTwo.add(bestGenerationLabel2);
+			topPanelGraphTwo.add(Box.createVerticalGlue());
 			topPanelGraphTwo.add(timeToCalculate2);
 			topPanelGraphTwo.add(Box.createVerticalGlue());
 			topPanelGraphTwo.add(graphPainter2);
@@ -840,7 +850,7 @@ public class is17222761 extends JFrame {
 			mainPanel.add(topPanelGraphOne, BorderLayout.LINE_START);
 			mainPanel.add(centerPanelButtons, BorderLayout.CENTER);
 			mainPanel.add(topPanelGraphTwo, BorderLayout.LINE_END);
-        
+
 			add(mainPanel);
 
 			generateNextPopulationButton.addActionListener(listener);
@@ -893,7 +903,7 @@ public class is17222761 extends JFrame {
 		}
 
 		private void drawEdges(double[] nodePoint, ArrayList<Integer> connections,
-				Graphics2D g) {
+							   Graphics2D g) {
 			for(Integer nodeValue : connections) {
 				double[] connectionPoint = coordinates.get(nodeValue);
 				g.setColor(Color.black);
@@ -908,7 +918,7 @@ public class is17222761 extends JFrame {
 		}
 
 		private void drawOrderingValue(double[] nodePoint, int index, int label,
-				Graphics2D g) {
+									   Graphics2D g) {
 			g.setStroke(new BasicStroke(4));
 			if (index < ordering.getOrdering().size() / 2) {
 				g.drawString(

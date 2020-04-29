@@ -81,11 +81,13 @@ public class is17222761 extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             if(e.getActionCommand().equals("Next Generation")) {
+				if (currentGeneration<numberOfGeneration){
 				generateNextGen();
 				//printOrderings(genOrders);
                 OrderingCost o = genOrders.get(0);
                 OrderingCost o2 = genOrders2.get(0);
                 gui.update(o,o2,o.getCost(), o2.getCost(), ++currentGeneration, o.getTime(), o2.getTime());
+				}
             } else if(e.getActionCommand().equals("Last Generation")) {
 				long total1=0;
 				long total2=0;
@@ -753,6 +755,8 @@ public class is17222761 extends JFrame {
 			setDefaultCloseOperation(EXIT_ON_CLOSE);
 			initMainPanel(listener);
 			setVisible(true);
+			setExtendedState(JFrame.MAXIMIZED_BOTH); 
+			// setUndecorated(true);
 		}
 
 		public void update(OrderingCost ordering,OrderingCost ordering2, double fitness,double fitness2, int generation
@@ -803,6 +807,9 @@ public class is17222761 extends JFrame {
 			centerPanelButtons.setLayout(new BoxLayout(centerPanelButtons, BoxLayout.Y_AXIS));
 			centerPanelButtons.setPreferredSize(new Dimension(WIDTH, 300));
 			centerPanelButtons.setPreferredSize(new Dimension(HEIGHT, 200));
+			generateNextPopulationButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+			generateFinalPopulationButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+			centerPanelButtons.add(Box.createVerticalGlue());
 			centerPanelButtons.add(generateNextPopulationButton);
 			centerPanelButtons.add(Box.createVerticalGlue());
 			centerPanelButtons.add(generateFinalPopulationButton);

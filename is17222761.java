@@ -88,7 +88,6 @@ public class is17222761 extends JFrame {
 			} else if(e.getActionCommand().equals("Last Generation")) {
 				for(;currentGeneration < numberOfGeneration; ++currentGeneration) {
 					generateNextGen();
-					System.out.println(total1);
 				}
 				OrderingCost o = genOrders.get(0);
 				OrderingCost o2 = genOrders2.get(0);
@@ -122,7 +121,7 @@ public class is17222761 extends JFrame {
 		rowValues.add(new ArrayList<Integer>());
 		String[] rowValuesString = new String [2];
 		try {
-			File myObj = new File("src/input.txt");
+			File myObj = new File("input.txt");
 			Scanner myReader = new Scanner(myObj);
 			while (myReader.hasNextLine()) {
 				String data = myReader.nextLine();
@@ -178,6 +177,25 @@ public class is17222761 extends JFrame {
 	}
 
 	public static void generateFirstGen() {
+		/*ArrayList<Vertice> testList = new ArrayList<>();
+		testList.add(verts.get(0));
+		testList.add(verts.get(1));
+		testList.add(verts.get(2));
+		testList.add(verts.get(3));
+		testList.add(verts.get(4));
+		testList.add(verts.get(5));
+		testList.add(verts.get(6));
+		testList.add(verts.get(7));
+		testList.add(verts.get(8));
+		testList.add(verts.get(9));
+		testList.add(verts.get(10));
+		testList.add(verts.get(11));
+		testList.add(verts.get(12));
+		testList.add(verts.get(13));
+		testList.add(verts.get(14));
+		testList.add(verts.get(15));
+		testList.add(verts.get(16));
+		testList.add(verts.get(17));*/
 		for(int i=0; i <populationSize;i++)
 		{
 			Collections.shuffle(verts);
@@ -191,8 +209,6 @@ public class is17222761 extends JFrame {
 		orderOrderings();
 		removeBottomThird();
 	}
-
-
 
 	//https://www.emis.de/journals/DM/v92/art5.pdf
 	public static double timGAFunk(OrderingCost ordering) {
@@ -227,34 +243,50 @@ public class is17222761 extends JFrame {
 
 		minNodeDistSum = (ordering.getOrdering().size() * Math.pow(minNodeDist, 2));
 		double deviation = 0;
+		//double lalala =0;
 		for(int i=0; i<ordering.getOrdering().size();i++)
 		{
 			Vertice vertOne = ordering.getOrdering().get(i);
-			for(int j=0;j<ordering.getOrdering().size();j++)
+			ArrayList<Integer> connections = vertOne.getConnections();
+			for(Integer vertNumber : connections)
 			{
-				Vertice v=ordering.getOrdering().get(j);
-				if(v.getNumber()!=vertOne.getNumber())
+				if(vertOne.getNumber() < vertNumber)
 				{
+
+					Vertice v=null;
+					for(int loop=0;loop<ordering.getOrdering().size();loop++) {
+						if(vertNumber == ordering.getOrdering().get(loop).getNumber())
+							v=ordering.getOrdering().get(loop);
+					}
 					double[] vertX = coordinates.get(vertOne.getNumber());
 					double[] vertY = coordinates.get(v.getNumber());
 					tmpDist = calculateDistance(vertX[0], vertX[1], vertY[0], vertY[1]);
-					deviation += Math.pow((tmpDist - minDist), 2);
+				//	System.out.println("Node1:"+vertOne.getNumber()+" Node2:"+v.getNumber()+" distance between:"+ tmpDist);
+					//System.out.println("Edge distance:"+tmpDist+" minDistanceEdge:"+ minDistanceEdge);
+					deviation += Math.pow((tmpDist - minNodeDist), 2);
+			//		System.out.println("Deviation:"+Math.pow((tmpDist - minNodeDist), 2));
 				}
+				
 			}
+			//deviation += Math.pow((lalala - minNodeDist), 2);
+			//lalala=0;
 		}
-
-		deviation = Math.sqrt((deviation/populationSize));
+		//System.out.println("DEVIATION1:"+deviation);
+		deviation = Math.sqrt((deviation/(ordering.getOrdering().size()-1)));
+		//System.out.println("DEVIATION2:"+deviation);
 		totalEdgeCrossings = getEdgeCrossings(ordering);
-
-		double fitness = Math.abs((2 * minDistSum) - (2 * deviation) - (2.5 * (deviation /  minNodeDistSum))
-				+ (0.25 * (populationSize * (Math.pow(minNodeDistSum, 2)))) + (1 * totalEdgeCrossings));
-
+		
+		double fitness = Math.abs((2 * minDistSum) - (2 * deviation) - (2.5 * (deviation /  minNodeDistSum)) 
+				+ (0.25 * (ordering.getOrdering().size() * (Math.pow(minNodeDistSum, 2)))) - (1 * 7200));//totalEdgeCrossings));
+		//System.out.println("Eval:"+fitness+" totalDist:"+minDistSum+" std:"+deviation+" minDist:"+ minNodeDistSum+" length:"+ ordering.getOrdering().size()+ " edgeCrossings:"+ 7200);
+		//System.out.println();
 		cost = fitness;
 		long endTime = System.nanoTime();
 		duration2 = (endTime - startTime);
 		total2+=(double)duration2/milliseconds; //Milliseconds
 		return cost;
 	}
+
 
 	public static int getEdgeCrossings(OrderingCost ordering) {
 		int crossings = 0;

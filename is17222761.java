@@ -136,7 +136,7 @@ public class is17222761 extends JFrame {
 		rowValues.add(new ArrayList<Integer>());
 		String[] rowValuesString = new String [2];
 		try {
-			File myObj = new File("src/input.txt");
+			File myObj = new File("input.txt");
 			Scanner myReader = new Scanner(myObj);
 			while (myReader.hasNextLine()) {
 				String data = myReader.nextLine();

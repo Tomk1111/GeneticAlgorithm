@@ -52,7 +52,7 @@ public class is17222761 extends JFrame {
 	private static ArrayList<OrderingCost> nextGenOrders = new ArrayList<OrderingCost>(); //used for fitnes function 1
 	private static ArrayList<OrderingCost> genOrders2 = new ArrayList<OrderingCost>(); //used for fitness function 2
 	private static ArrayList<OrderingCost> nextGenOrders2 = new ArrayList<OrderingCost>(); //used for fitnes function 2
-	
+
 	public static void main (String [] args) {
 		String message = "Mutation rate: Please enter a positive integer in the range [0,100]";
 		adjacencyMatrix=parseInputFile();
@@ -81,27 +81,25 @@ public class is17222761 extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             if(e.getActionCommand().equals("Next Generation")) {
-                long startTime = System.nanoTime();
 				generateNextGen();
-				long endTime = System.nanoTime();
-				long duration = (endTime - startTime);
-				duration=duration/1000000; //Milliseconds
 				//printOrderings(genOrders);
                 OrderingCost o = genOrders.get(0);
                 OrderingCost o2 = genOrders2.get(0);
-                gui.update(o,o2,o.getCost(), o2.getCost(), ++currentGeneration, duration,duration);
+                gui.update(o,o2,o.getCost(), o2.getCost(), ++currentGeneration, o.getTime(), o2.getTime());
             } else if(e.getActionCommand().equals("Last Generation")) {
-				long startTime = System.nanoTime();
+				long total1=0;
+				long total2=0;
                 for(;currentGeneration < numberOfGeneration; ++currentGeneration) {
                     generateNextGen();
+					OrderingCost o = genOrders.get(0);
+					OrderingCost o2 = genOrders2.get(0);
+					total1+=o.getTime();
+					total2+=o2.getTime();
 					//printOrderings(genOrders);
                 }
-				long endTime = System.nanoTime();
-				long duration = (endTime - startTime);
-				duration=duration/1000000; //Milliseconds
                 OrderingCost o = genOrders.get(0);
                 OrderingCost o2 = genOrders2.get(0);
-                gui.update(o,o2,o.getCost(), o2.getCost(),currentGeneration,duration,duration);
+                gui.update(o,o2,o.getCost(), o2.getCost(),currentGeneration,total1, total2);
             }
         }
     }
@@ -208,11 +206,11 @@ public class is17222761 extends JFrame {
 		testList.add(verts.get(17));
 		for(int i=0; i <populationSize;i++)
 		{
-//			Collections.shuffle(verts);
+			Collections.shuffle(verts);
 			OrderingCost ordering = new OrderingCost((ArrayList)verts.clone(),0);
 			ordering.setCost(fitnessFunk(ordering));
 			genOrders.add(ordering);
-			OrderingCost ordering2 = new OrderingCost((ArrayList)testList.clone(),0);
+			OrderingCost ordering2 = new OrderingCost((ArrayList)verts.clone(),0);
 			ordering2.setCost(timGAFunk(ordering2));
 			genOrders2.add(ordering2);
 		}
@@ -224,6 +222,7 @@ public class is17222761 extends JFrame {
 
 	//https://www.emis.de/journals/DM/v92/art5.pdf
 	public static double timGAFunk(OrderingCost ordering) {
+		long startTime = System.nanoTime();
 		double cost = 0;
 		double tmpDist = 0;
 		double minDist = 1;
@@ -236,29 +235,23 @@ public class is17222761 extends JFrame {
 		for(int i=0; i<ordering.getOrdering().size();i++)
 		{
 			Vertice vertOne = ordering.getOrdering().get(i);
-			ArrayList<Integer> connections = vertOne.getConnections();
-			for(Integer vertNumber : connections)
+			for(int j=0;j<ordering.getOrdering().size();j++)
 			{
-				if(vertOne.getNumber() < vertNumber)
+				Vertice v=ordering.getOrdering().get(j);
+				if(v.getNumber()!=vertOne.getNumber())
 				{
-
-					Vertice v=null;
-					for(int loop=0;loop<ordering.getOrdering().size();loop++) {
-						if(vertNumber == ordering.getOrdering().get(loop).getNumber())
-							v=ordering.getOrdering().get(loop);
-					}
 					double[] vertX = coordinates.get(vertOne.getNumber());
 					double[] vertY = coordinates.get(v.getNumber());
 					tmpDist = calculateDistance(vertX[0], vertX[1], vertY[0], vertY[1]);
 					minDist = Math.min(tmpDist, minDist);
 					minNodeDist = Math.min(minNodeDist, tmpDist);
-
 				}
-				minDistSum += minDist;
 			}
+			minDistSum += minDist;
+			minDist=1;
 		}
 
-		minNodeDistSum = (populationSize * Math.pow(minNodeDist, 2));
+		minNodeDistSum = (ordering.getOrdering().size() * Math.pow(minNodeDist, 2));
 		double deviation = 0;
 
 		for(int i=0; i<ordering.getOrdering().size();i++)
@@ -286,16 +279,14 @@ public class is17222761 extends JFrame {
 		deviation = Math.sqrt((deviation/populationSize));
 		totalEdgeCrossings = getEdgeCrossings(ordering);
 
-		System.out.println("minDistSum:"+ minDistSum);
-		System.out.println("deviation:"+ deviation);
-		System.out.println("minDist:"+ minDist);
-		System.out.println("totalEdgeCrossings:"+ totalEdgeCrossings);
-		double fitness = Math.abs((2 * minDistSum) - (2 * deviation) - (2.5 * (deviation /  minDist))
-				+ (0.25 * (populationSize * (Math.pow(minDist, 2)))) - (1 * totalEdgeCrossings));
+		double fitness = Math.abs((2 * minDistSum) - (2 * deviation) - (2.5 * (deviation /  minNodeDistSum)) 
+				+ (0.25 * (populationSize * (Math.pow(minNodeDistSum, 2)))) + (1 * totalEdgeCrossings));
 
 		cost = fitness;
-		System.out.println("fitnessScore"+cost);
-		System.out.println();
+		long endTime = System.nanoTime();
+		long duration = (endTime - startTime);
+		duration=duration/1000000; //Milliseconds
+		ordering.setTime(duration);
 		return cost;
 	}
 
@@ -341,6 +332,7 @@ public class is17222761 extends JFrame {
 
 
 	public static double fitnessFunk(OrderingCost ordering) {
+		long startTime = System.nanoTime();
 		double cost = 0;
 		Map<Integer, double[]> coordinates = ordering.generateCoordinates(chunk);
 		for(int i=0; i<ordering.getOrdering().size();i++)
@@ -364,6 +356,10 @@ public class is17222761 extends JFrame {
 				}
 			}
 		}
+		long endTime = System.nanoTime();
+		long duration = (endTime - startTime);
+		duration=duration/1000000; //Milliseconds
+		ordering.setTime(duration);
 		return cost;
 	}
 	
@@ -379,6 +375,7 @@ public class is17222761 extends JFrame {
 			genOrders.add(genOrders.get(i));
 			genOrders2.remove(genOrders2.size()-(i+1));
 			genOrders2.add(genOrders2.get(i));
+			//genOrders2.set(i,genOrders2.get(genOrders2.size()-(i+1)));
 		}
 	}
 	
@@ -635,6 +632,7 @@ public class is17222761 extends JFrame {
 	static class OrderingCost implements Comparable<OrderingCost> {
 		ArrayList<Vertice> ordering = new ArrayList<Vertice>();
         double cost;
+		long time;
 
         public OrderingCost(ArrayList<Vertice> ordering, double cost) {
             this.ordering = ordering;
@@ -648,6 +646,14 @@ public class is17222761 extends JFrame {
 		
 		public void setCost(double cost) {
 			this.cost=cost;
+		}
+		
+		public void setTime(long time) {
+			this.time=time;
+		}
+		
+		public long getTime() {
+			return this.time;
 		}
 		
 		public ArrayList<Vertice> getOrdering() {

@@ -53,6 +53,11 @@ public class is17222761 extends JFrame {
 	private static ArrayList<OrderingCost> genOrders2 = new ArrayList<OrderingCost>(); //used for fitness function 2
 	private static ArrayList<OrderingCost> nextGenOrders2 = new ArrayList<OrderingCost>(); //used for fitnes function 2
 
+	public static int bestGeneration1 = 0;
+	public static int bestGeneration2 = 0;
+	public static double bestScore1;
+	public static double bestScore2;
+
 	public static void main (String [] args) {
 		String message = "Mutation rate: Please enter a positive integer in the range [0,100]";
 		adjacencyMatrix=parseInputFile();
@@ -74,7 +79,7 @@ public class is17222761 extends JFrame {
 		//generateNextGen();
 		gui = new GUI(genOrders.get(0),genOrders2.get(0),currentGeneration,chunk,new ButtonListener());
 	}
-	
+
 	static class ButtonListener implements ActionListener {
         public ButtonListener(){};
 
@@ -129,7 +134,7 @@ public class is17222761 extends JFrame {
 		rowValues.add(new ArrayList<Integer>());
 		String[] rowValuesString = new String [2];
 		try {
-			File myObj = new File("input.txt");
+			File myObj = new File("src/input.txt");
 			Scanner myReader = new Scanner(myObj);
 			while (myReader.hasNextLine()) {
 				String data = myReader.nextLine();
@@ -760,10 +765,20 @@ public class is17222761 extends JFrame {
 			orderingLabel.setText("Current best ordering: " + ordering.toString2());
 			currentGenerationLabel.setText("Current generation: " + generation);
 			bestOrderingFitnessCost.setText("Ordering Fitness: " + fitness);
+			if (fitness < bestScore1) {
+				bestScore1 = fitness;
+				bestGeneration1 = generation;
+				System.out.println("1 BEST GEN: " + bestGeneration1);
+			}
 			graphPainter.setOrdering(ordering);
 			orderingLabel2.setText("Current best ordering: " + ordering2.toString2());
 			currentGenerationLabel2.setText("Current generation: " + generation);
 			bestOrderingFitnessCost2.setText("Ordering Fitness: " + fitness2);
+			if (fitness2 < bestScore2) {
+				bestScore2 = fitness2;
+				bestGeneration2 = generation;
+				System.out.println("2 BEST GEN: " + bestGeneration2);
+			}
 			timeToCalculate.setText("Time: "+time1+" milliseconds");
 			timeToCalculate2.setText("Time: "+time2+" milliseconds");
 			graphPainter2.setOrdering(ordering2);
@@ -779,6 +794,7 @@ public class is17222761 extends JFrame {
 					bestOrdering.toString2());
 			currentGenerationLabel = new JLabel("Current generation: 0");
 			bestOrderingFitnessCost = new JLabel("Ordering Fitness: " + bestOrdering.getCost());
+			bestScore1 = bestOrdering.getCost();
 			generateNextPopulationButton = new JButton("Next Generation");
 			generateFinalPopulationButton = new JButton("Last Generation");
 			fitnessNameLabel = new JLabel("Fitness Function: Sum of Edge Lenghts");
@@ -788,6 +804,7 @@ public class is17222761 extends JFrame {
 					bestOrdering2.toString2());
 			currentGenerationLabel2 = new JLabel("Current generation: 0");
 			bestOrderingFitnessCost2 = new JLabel("Ordering Fitness: " + bestOrdering2.getCost());
+			bestScore2 = bestOrdering2.getCost();
 			fitnessNameLabel2 = new JLabel("Fitness Function: OTHER FITNESS FUNCTION");
 			timeToCalculate2 = new JLabel("Time: 0 milliseconds");
 

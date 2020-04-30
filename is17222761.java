@@ -39,7 +39,7 @@ public class is17222761 extends JFrame {
     private static ArrayList<OrderingCost> genOrders = new ArrayList<>(); //used for fitness function 1
     private static ArrayList<OrderingCost> genOrders2 = new ArrayList<>(); //used for fitness function 2
     public static String compareGens;
-	public static String compareTimes;
+    public static String compareTimes;
 
     public static void main(String[] args) {
         String message = "Mutation rate: Please enter a positive integer in the range [0,100]";
@@ -136,19 +136,6 @@ public class is17222761 extends JFrame {
         }
     }
 
-    public static void printOrderings(ArrayList<OrderingCost> o) {
-        for (OrderingCost orderingCost : o) {
-            for (int j = 0; j < orderingCost.getOrdering().size(); j++) {
-                System.out.print(orderingCost.getOrdering().get(j).getNumber() + " ");
-            }
-
-            System.out.print("Cost:" + orderingCost.getCost());
-            System.out.print("\n");
-        }
-
-        System.out.print("\n");
-    }
-
     public static void generateFirstGen() {
         for (int i = 0; i < populationSize; i++) {
             Collections.shuffle(verts);
@@ -195,7 +182,7 @@ public class is17222761 extends JFrame {
 
         minNodeDistSum = (ordering.getOrdering().size() * Math.pow(minNodeDist, 2));
         double deviation = 0;
-		int counter = 0;
+        int counter = 0;
         for (int i = 0; i < ordering.getOrdering().size(); i++) {
             Vertice vertOne = ordering.getOrdering().get(i);
             ArrayList<Integer> connections = vertOne.getConnections();
@@ -210,64 +197,23 @@ public class is17222761 extends JFrame {
                     double[] vertY = coordinates.get(v.getNumber());
                     tmpDist = calculateDistance(vertX[0], vertX[1], vertY[0], vertY[1]);
                     deviation += Math.pow((tmpDist - minNodeDist), 2);
-					counter++;
+                    counter++;
                 }
             }
         }
 
         deviation = Math.sqrt((deviation / (ordering.getOrdering().size() - 1)));
-		//https://en.wikipedia.org/wiki/Crossing_number_(graph_theory)
-        totalEdgeCrossings = ((ordering.getOrdering().size()/2) * ((ordering.getOrdering().size()-1)/2) * ((counter/2)) * ((--counter)/2));
+        //https://en.wikipedia.org/wiki/Crossing_number_(graph_theory)
+        totalEdgeCrossings = ((ordering.getOrdering().size() / 2) * ((ordering.getOrdering().size() - 1) / 2) * ((counter / 2)) * ((--counter) / 2));
 
         double fitness = Math.abs((2 * minDistSum) - (2 * deviation) - (2.5 * (deviation / minNodeDistSum))
                 + (0.25 * (ordering.getOrdering().size() * (Math.pow(minNodeDistSum, 2)))) - (1 * totalEdgeCrossings));
-        
+
         cost = fitness;
         long endTime = System.nanoTime();
         long duration2 = (endTime - startTime);
         total2 += (double) duration2 / milliseconds;
         return cost;
-    }
-
-    public static int getEdgeCrossings(OrderingCost ordering) {
-        int crossings = 0;
-
-        for (int i = 0; i < ordering.getOrdering().size(); i++) {
-            Vertice vertice = ordering.getOrdering().get(i);
-
-            for (int tail : vertice.getConnections()) {
-                if (tail < vertice.getNumber()) continue;
-                crossings += countIntersections(vertice.getNumber(), tail, ordering);
-            }
-        }
-
-        return crossings / 2;
-    }
-
-    public static int countIntersections(int start, int end, OrderingCost ordering) {
-        int crossings = 0;
-        Map<Integer, double[]> coordinates = ordering.generateCoordinates(chunk);
-        double[] startPoint = coordinates.get(start);
-        double[] endPoint = coordinates.get(end);
-
-        for (int i = 0; i < ordering.getOrdering().size(); i++) {
-            if (i == start || i == end) continue;
-
-            Vertice vertice = ordering.getOrdering().get(i);
-            for (int num : vertice.getConnections()) {
-                if (num < vertice.getNumber()) continue;
-                if (num == start || num == end) continue;
-
-                double[] compareStart = coordinates.get(vertice.getNumber());
-                double[] compareEnd = coordinates.get(num);
-                if (Line2D.linesIntersect(startPoint[0], startPoint[1], endPoint[0], endPoint[1], compareStart[0],
-                        compareStart[1], compareEnd[0], compareEnd[1])) {
-                    crossings++;
-                }
-            }
-        }
-
-        return crossings;
     }
 
     public static double fitnessFunk(OrderingCost ordering) {
@@ -522,11 +468,11 @@ public class is17222761 extends JFrame {
                     OrderingCost o2 = genOrders2.get(0);
                     gui.update(o, o2, o.getCost(), o2.getCost(), ++currentGeneration, total1, total2);
                 }
-                if (currentGeneration==numberOfGeneration){
-                    String comparison= compareGens+ "\n";
-                    comparison=comparison+"\n";
-                    comparison=comparison+compareTimes;
-                    JOptionPane.showMessageDialog(gui, comparison, "Comparison",JOptionPane.INFORMATION_MESSAGE);
+                if (currentGeneration == numberOfGeneration) {
+                    String comparison = compareGens + "\n";
+                    comparison = comparison + "\n";
+                    comparison = comparison + compareTimes;
+                    JOptionPane.showMessageDialog(gui, comparison, "Comparison", JOptionPane.INFORMATION_MESSAGE);
                 }
             } else if (e.getActionCommand().equals("Last Generation")) {
                 for (; currentGeneration < numberOfGeneration; ++currentGeneration) {
@@ -538,10 +484,10 @@ public class is17222761 extends JFrame {
                 OrderingCost o = genOrders.get(0);
                 OrderingCost o2 = genOrders2.get(0);
                 gui.update(o, o2, o.getCost(), o2.getCost(), currentGeneration, total1, total2);
-                String comparison= compareGens+ "\n";
-				comparison=comparison+"\n";
-				comparison=comparison+compareTimes;
-				JOptionPane.showMessageDialog(gui, comparison, "Comparison",JOptionPane.INFORMATION_MESSAGE);
+                String comparison = compareGens + "\n";
+                comparison = comparison + "\n";
+                comparison = comparison + compareTimes;
+                JOptionPane.showMessageDialog(gui, comparison, "Comparison", JOptionPane.INFORMATION_MESSAGE);
             }
         }
     }
@@ -680,24 +626,20 @@ public class is17222761 extends JFrame {
             timeToCalculate.setText("Time: " + time1 + " milliseconds");
             timeToCalculate2.setText("Time: " + time2 + " milliseconds");
             graphPainter2.setOrdering(ordering2);
-            if (total1<total2){
-				compareTimes=("Best Time: Sum of Edge Lengths is quicker than TimGA by "+ (total2-total1) + " milliseconds");
-			}
-			else if (total2<total1){
-				compareTimes=("Best Time: TimGA is quicker than Sum of Edge Lengths by "+ (total1-total2) + "milliseconds");
-			}
-			else{
-				compareTimes=("Best Time: The Algorithms run at the same speed");
-			}
-			if (bestGeneration1<bestGeneration2){
-				compareGens=("Best Generation: Sum of Edge Lengths is " + (bestGeneration2-bestGeneration1) +" Generations quicker than TimGA");
-			}
-			else if (bestGeneration2<bestGeneration1){
-				compareGens=("Best Generation: TimGA is " + (bestGeneration1-bestGeneration2) +" Generations quicker than Sum of Edge Lengths");
-			}
-			else{
-				compareGens=("Best Generation: The Algorithms Have the Same Generation Number: "+bestGeneration1);
-			}
+            if (total1 < total2) {
+                compareTimes = ("Best Time: Sum of Edge Lengths is quicker than TimGA by " + (total2 - total1) + " milliseconds");
+            } else if (total2 < total1) {
+                compareTimes = ("Best Time: TimGA is quicker than Sum of Edge Lengths by " + (total1 - total2) + "milliseconds");
+            } else {
+                compareTimes = ("Best Time: The Algorithms run at the same speed");
+            }
+            if (bestGeneration1 < bestGeneration2) {
+                compareGens = ("Best Generation: Sum of Edge Lengths is " + (bestGeneration2 - bestGeneration1) + " Generations quicker than TimGA");
+            } else if (bestGeneration2 < bestGeneration1) {
+                compareGens = ("Best Generation: TimGA is " + (bestGeneration1 - bestGeneration2) + " Generations quicker than Sum of Edge Lengths");
+            } else {
+                compareGens = ("Best Generation: The Algorithms Have the Same Generation Number: " + bestGeneration1);
+            }
             repaint();
         }
 

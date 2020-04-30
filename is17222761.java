@@ -62,7 +62,7 @@ public class is17222761 extends JFrame {
         generateFirstGen();
         //printOrderings(genOrders);
 
-        gui = new GUI(genOrders.get(0), genOrders2.get(0), currentGeneration, chunk, new ButtonListener());
+        gui = new GUI(genOrders.get(0), genOrders2.get(0), chunk, new ButtonListener());
     }
 
     public static int getPositiveInput(String message, String errorMessage, int greaterThan, int lessThan) {
@@ -565,27 +565,27 @@ public class is17222761 extends JFrame {
     }
 
     static class GUI extends JFrame {
-        private static final int WIDTH = 1000;
-        private static final int HEIGHT = 600;
-        private static final String TITLE = "Graph Visualisation";
         private final double chunk;
         private final OrderingCost bestOrdering;
         private final OrderingCost bestOrdering2;
-        private Painter graphPainter;
-        private JLabel orderingLabel;
-        private JLabel currentGenerationLabel;
+        private Drawer circleDrawer;
+        private JLabel bestOrderingLabel;
+        private JLabel genLabel;
         private JLabel bestGenerationLabel1;
-        private JLabel bestOrderingFitnessCost;
+        private JLabel bestFitnessLabel;
         private JLabel timeToCalculate;
-        private Painter graphPainter2;
-        private JLabel orderingLabel2;
-        private JLabel currentGenerationLabel2;
-        private JLabel bestOrderingFitnessCost2;
+        private Drawer circleDrawer2;
+        private JLabel bestOrderingLabel2;
+		private static final int WIDTH = 1000;
+        private static final int HEIGHT = 600;
+        private static final String TITLE = "Genetic Algorithm - Graph Visualisation";
+        private JLabel genLabel2;
+        private JLabel bestFitnessLabel2;
         private JLabel bestGenerationLabel2;
         private JLabel timeToCalculate2;
 
         public GUI(OrderingCost bestOrdering, OrderingCost bestOrdering2,
-                   int generations, double chunk, ActionListener listener) {
+                    double chunk, ActionListener listener) {
             super(TITLE);
             this.bestOrdering = bestOrdering;
             this.bestOrdering2 = bestOrdering2;
@@ -595,37 +595,34 @@ public class is17222761 extends JFrame {
             initMainPanel(listener);
             setVisible(true);
             setExtendedState(JFrame.MAXIMIZED_BOTH);
-            // setUndecorated(true);
         }
 
         public void update(OrderingCost ordering, OrderingCost ordering2, double fitness, double fitness2, int generation
                 , double time1, double time2) {
-            orderingLabel.setText("Current best ordering: " + ordering.toString2());
-            currentGenerationLabel.setText("Current generation: " + generation);
-            bestOrderingFitnessCost.setText("Ordering Fitness: " + fitness);
+            bestOrderingLabel.setText("Current best ordering: " + ordering.toString2());
+            genLabel.setText("Current generation: " + generation);
+            bestFitnessLabel.setText("Ordering Fitness: " + fitness);
 
             if (fitness < bestScore1) {
                 bestScore1 = fitness;
                 bestGeneration1 = generation;
-                System.out.println("1 BEST GEN: " + bestGeneration1);
             }
 
             bestGenerationLabel1.setText("Best Generation: " + bestGeneration1);
-            graphPainter.setOrdering(ordering);
-            orderingLabel2.setText("Current best ordering: " + ordering2.toString2());
-            currentGenerationLabel2.setText("Current generation: " + generation);
-            bestOrderingFitnessCost2.setText("Ordering Fitness: " + fitness2);
+            circleDrawer.setOrdering(ordering);
+            bestOrderingLabel2.setText("Current best ordering: " + ordering2.toString2());
+            genLabel2.setText("Current generation: " + generation);
+            bestFitnessLabel2.setText("Ordering Fitness: " + fitness2);
 
             if (fitness2 < bestScore2) {
                 bestScore2 = fitness2;
                 bestGeneration2 = generation;
-                System.out.println("2 BEST GEN: " + bestGeneration2);
             }
 
             bestGenerationLabel2.setText("Best Generation: " + bestGeneration2);
             timeToCalculate.setText("Time: " + time1 + " milliseconds");
             timeToCalculate2.setText("Time: " + time2 + " milliseconds");
-            graphPainter2.setOrdering(ordering2);
+            circleDrawer2.setOrdering(ordering2);
             if (total1 < total2) {
                 compareTimes = ("Best Time: Sum of Edge Lengths is quicker than TimGA by " + (total2 - total1) + " milliseconds");
             } else if (total2 < total1) {
@@ -648,26 +645,26 @@ public class is17222761 extends JFrame {
             mainPanel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
             mainPanel.setLayout(new BorderLayout());
 
-            orderingLabel = new JLabel("Current best ordering: " +
+            bestOrderingLabel = new JLabel("Current best ordering: " +
                     bestOrdering.toString2());
-            currentGenerationLabel = new JLabel("Current generation: 0");
-            bestOrderingFitnessCost = new JLabel("Ordering Fitness: " + bestOrdering.getCost());
+            genLabel = new JLabel("Current generation: 0");
+            bestFitnessLabel = new JLabel("Ordering Fitness: " + bestOrdering.getCost());
             bestScore1 = bestOrdering.getCost();
-            JButton generateNextPopulationButton = new JButton("Next Generation");
-            JButton generateFinalPopulationButton = new JButton("Last Generation");
-            JLabel fitnessNameLabel = new JLabel("Fitness Function: Sum of Edge Lenghts");
+            JButton nextGenButton = new JButton("Next Generation");
+            JButton lastGenButton = new JButton("Last Generation");
+            JLabel fitnessNameLabel = new JLabel("Fitness Function: Sum of Edge Lengths");
             timeToCalculate = new JLabel("Time: 0 milliseconds");
             bestGenerationLabel1 = new JLabel("Best Generation: " + bestGeneration1);
-            orderingLabel2 = new JLabel("Current best ordering: " +
+            bestOrderingLabel2 = new JLabel("Current best ordering: " +
                     bestOrdering2.toString2());
-            currentGenerationLabel2 = new JLabel("Current generation: 0");
-            bestOrderingFitnessCost2 = new JLabel("Ordering Fitness: " + bestOrdering2.getCost());
+            genLabel2 = new JLabel("Current generation: 0");
+            bestFitnessLabel2 = new JLabel("Ordering Fitness: " + bestOrdering2.getCost());
             bestScore2 = bestOrdering2.getCost();
             JLabel fitnessNameLabel2 = new JLabel("Fitness Function: TimGA");
             timeToCalculate2 = new JLabel("Time: 0 milliseconds");
             bestGenerationLabel2 = new JLabel("Best Generation: " + bestGeneration2);
-            graphPainter = new Painter(bestOrdering, chunk);
-            graphPainter2 = new Painter(bestOrdering2, chunk);
+            circleDrawer = new Drawer(bestOrdering, chunk);
+            circleDrawer2 = new Drawer(bestOrdering2, chunk);
 
             Border blackline = BorderFactory.createLineBorder(Color.black);
             JPanel topPanelGraphOne = new JPanel();
@@ -678,53 +675,53 @@ public class is17222761 extends JFrame {
             centerPanelButtons.setLayout(new BoxLayout(centerPanelButtons, BoxLayout.Y_AXIS));
             centerPanelButtons.setPreferredSize(new Dimension(WIDTH, 300));
             centerPanelButtons.setPreferredSize(new Dimension(HEIGHT, 200));
-            generateNextPopulationButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-            generateFinalPopulationButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+            nextGenButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+            lastGenButton.setAlignmentX(Component.CENTER_ALIGNMENT);
             centerPanelButtons.add(Box.createVerticalGlue());
-            centerPanelButtons.add(generateNextPopulationButton);
+            centerPanelButtons.add(nextGenButton);
             centerPanelButtons.add(Box.createVerticalGlue());
-            centerPanelButtons.add(generateFinalPopulationButton);
+            centerPanelButtons.add(lastGenButton);
             centerPanelButtons.add(Box.createVerticalGlue());
 
             topPanelGraphOne.setBorder(blackline);
             topPanelGraphTwo.setBorder(blackline);
 
-            graphPainter.setBorder(blackline);
-            graphPainter2.setBorder(blackline);
+            circleDrawer.setBorder(blackline);
+            circleDrawer2.setBorder(blackline);
 
             topPanelGraphOne.setLayout(new BoxLayout(topPanelGraphOne, BoxLayout.Y_AXIS));
             topPanelGraphOne.setPreferredSize(new Dimension(WIDTH, 300));
             topPanelGraphOne.setPreferredSize(new Dimension(HEIGHT, 200));
             topPanelGraphOne.add(fitnessNameLabel);
             topPanelGraphOne.add(Box.createVerticalGlue());
-            topPanelGraphOne.add(orderingLabel);
+            topPanelGraphOne.add(bestOrderingLabel);
             topPanelGraphOne.add(Box.createVerticalGlue());
-            topPanelGraphOne.add(currentGenerationLabel);
+            topPanelGraphOne.add(genLabel);
             topPanelGraphOne.add(Box.createVerticalGlue());
-            topPanelGraphOne.add(bestOrderingFitnessCost);
+            topPanelGraphOne.add(bestFitnessLabel);
             topPanelGraphOne.add(Box.createVerticalGlue());
             topPanelGraphOne.add(bestGenerationLabel1);
             topPanelGraphOne.add(Box.createVerticalGlue());
             topPanelGraphOne.add(timeToCalculate);
             topPanelGraphOne.add(Box.createVerticalGlue());
-            topPanelGraphOne.add(graphPainter);
+            topPanelGraphOne.add(circleDrawer);
 
             topPanelGraphTwo.setLayout(new BoxLayout(topPanelGraphTwo, BoxLayout.Y_AXIS));
             topPanelGraphTwo.setPreferredSize(new Dimension(WIDTH, 300));
             topPanelGraphTwo.setPreferredSize(new Dimension(HEIGHT, 200));
             topPanelGraphTwo.add(fitnessNameLabel2);
             topPanelGraphTwo.add(Box.createVerticalGlue());
-            topPanelGraphTwo.add(orderingLabel2);
+            topPanelGraphTwo.add(bestOrderingLabel2);
             topPanelGraphTwo.add(Box.createVerticalGlue());
-            topPanelGraphTwo.add(currentGenerationLabel2);
+            topPanelGraphTwo.add(genLabel2);
             topPanelGraphTwo.add(Box.createVerticalGlue());
-            topPanelGraphTwo.add(bestOrderingFitnessCost2);
+            topPanelGraphTwo.add(bestFitnessLabel2);
             topPanelGraphTwo.add(Box.createVerticalGlue());
             topPanelGraphTwo.add(bestGenerationLabel2);
             topPanelGraphTwo.add(Box.createVerticalGlue());
             topPanelGraphTwo.add(timeToCalculate2);
             topPanelGraphTwo.add(Box.createVerticalGlue());
-            topPanelGraphTwo.add(graphPainter2);
+            topPanelGraphTwo.add(circleDrawer2);
 
             mainPanel.add(topPanelGraphOne, BorderLayout.LINE_START);
             mainPanel.add(centerPanelButtons, BorderLayout.CENTER);
@@ -732,22 +729,22 @@ public class is17222761 extends JFrame {
 
             add(mainPanel);
 
-            generateNextPopulationButton.addActionListener(listener);
-            generateFinalPopulationButton.addActionListener(listener);
+            nextGenButton.addActionListener(listener);
+            lastGenButton.addActionListener(listener);
         }
     }
 
-    static class Painter extends JPanel {
-        private static final int WIDTH = 400;
-        private static final int HEIGHT = 400;
-        private static final int RADIUS = 150;
-        private static final int SHIFTX = WIDTH / 2;
-        private static final int SHIFTY = HEIGHT / 2;
+    static class Drawer extends JPanel {
         private final double chunk;
         private OrderingCost ordering;
         private Map<Integer, double[]> coordinates;
+		private static final int WIDTH = 400;
+        private static final int HEIGHT = 400;
+        private static final int RADIUS = 150;
+		private static final int SHIFTX = WIDTH / 2;
+        private static final int SHIFTY = HEIGHT / 2;
 
-        public Painter(OrderingCost ordering, double chunk) {
+        public Drawer(OrderingCost ordering, double chunk) {
             this.ordering = ordering;
             this.chunk = chunk;
             coordinates = ordering.generateCoordinates(chunk);
@@ -765,7 +762,7 @@ public class is17222761 extends JFrame {
             Graphics2D g2 = (Graphics2D) g;
 
             g2.setStroke(new BasicStroke(2));
-            g2.setColor(Color.red);
+            g2.setColor(Color.black);
             g2.drawOval((WIDTH / 2) - RADIUS, (HEIGHT / 2) - RADIUS, RADIUS * 2, RADIUS * 2);
             g2.setColor(Color.black);
 
@@ -779,23 +776,8 @@ public class is17222761 extends JFrame {
                 drawEdges(nodePoint, nodeConnections, g2);
             }
         }
-
-        private void drawEdges(double[] nodePoint, ArrayList<Integer> connections,
-                               Graphics2D g) {
-            for (Integer nodeValue : connections) {
-                double[] connectionPoint = coordinates.get(nodeValue);
-                g.setColor(Color.black);
-                g.setStroke(new BasicStroke(3));
-                g.drawLine(
-                        (int) (nodePoint[0] * RADIUS) + SHIFTX,
-                        (int) (nodePoint[1] * RADIUS) + SHIFTY,
-                        (int) (connectionPoint[0] * RADIUS) + SHIFTX,
-                        (int) (connectionPoint[1] * RADIUS) + SHIFTY);
-            }
-
-        }
-
-        private void drawOrderingValue(double[] nodePoint, int index, int label,
+		
+		private void drawOrderingValue(double[] nodePoint, int index, int label,
                                        Graphics2D g) {
             g.setStroke(new BasicStroke(4));
             if (index < ordering.getOrdering().size() / 2) {
@@ -811,13 +793,29 @@ public class is17222761 extends JFrame {
             }
         }
 
-        private void drawNodePoint(double[] nodePoint, Graphics2D g) {
-            g.setColor(Color.blue);
+        private void drawEdges(double[] nodePoint, ArrayList<Integer> connections,
+                               Graphics2D g) {
+            for (Integer nodeValue : connections) {
+                double[] connectionPoint = coordinates.get(nodeValue);
+                g.setColor(Color.blue);
+                g.setStroke(new BasicStroke(2));
+                g.drawLine(
+                        (int) (nodePoint[0] * RADIUS) + SHIFTX,
+                        (int) (nodePoint[1] * RADIUS) + SHIFTY,
+                        (int) (connectionPoint[0] * RADIUS) + SHIFTX,
+                        (int) (connectionPoint[1] * RADIUS) + SHIFTY);
+            }
+
+        }
+		
+		private void drawNodePoint(double[] nodePoint, Graphics2D g) {
+            g.setColor(Color.red);
             g.fillOval(
                     (int) (nodePoint[0] * RADIUS) + SHIFTX - 7,
                     (int) (nodePoint[1] * RADIUS) + SHIFTY - 7,
                     14,
                     14);
         }
+
     }
 }

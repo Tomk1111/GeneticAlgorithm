@@ -255,12 +255,15 @@ public class is17222761 extends JFrame {
     public static void removeBottomThird() {
         int third = ((int) (Math.ceil(populationSize / 3.0)));
 
-        for (int i = 0; i < third; i++) {
-            genOrders.remove(genOrders.size() - (i + 1));
-            genOrders.add(genOrders.get(i));
-            genOrders2.remove(genOrders2.size() - (i + 1));
-            genOrders2.add(genOrders2.get(i));
-        }
+		if(populationSize!=1)
+		{
+			for (int i = 0; i < third; i++) {
+				genOrders.remove(genOrders.size() - (i + 1));
+				genOrders.add(genOrders.get(i));
+				genOrders2.remove(genOrders2.size() - (i + 1));
+				genOrders2.add(genOrders2.get(i));
+			}
+		}
     }
 
     public static double calculateDistance(double x1, double y1, double x2, double y2) {

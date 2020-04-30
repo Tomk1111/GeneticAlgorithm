@@ -38,6 +38,8 @@ public class is17222761 extends JFrame {
     private static GUI gui;
     private static ArrayList<OrderingCost> genOrders = new ArrayList<>(); //used for fitness function 1
     private static ArrayList<OrderingCost> genOrders2 = new ArrayList<>(); //used for fitness function 2
+    public static String compareGens;
+	public static String compareTimes;
 
     public static void main(String[] args) {
         String message = "Mutation rate: Please enter a positive integer in the range [0,100]";
@@ -520,6 +522,12 @@ public class is17222761 extends JFrame {
                     OrderingCost o2 = genOrders2.get(0);
                     gui.update(o, o2, o.getCost(), o2.getCost(), ++currentGeneration, total1, total2);
                 }
+                if (currentGeneration==numberOfGeneration){
+                    String comparison= compareGens+ "\n";
+                    comparison=comparison+"\n";
+                    comparison=comparison+compareTimes;
+                    JOptionPane.showMessageDialog(gui, comparison, "Comparison",JOptionPane.INFORMATION_MESSAGE);
+                }
             } else if (e.getActionCommand().equals("Last Generation")) {
                 for (; currentGeneration < numberOfGeneration; ++currentGeneration) {
                     generateNextGen();
@@ -530,6 +538,10 @@ public class is17222761 extends JFrame {
                 OrderingCost o = genOrders.get(0);
                 OrderingCost o2 = genOrders2.get(0);
                 gui.update(o, o2, o.getCost(), o2.getCost(), currentGeneration, total1, total2);
+                String comparison= compareGens+ "\n";
+				comparison=comparison+"\n";
+				comparison=comparison+compareTimes;
+				JOptionPane.showMessageDialog(gui, comparison, "Comparison",JOptionPane.INFORMATION_MESSAGE);
             }
         }
     }
@@ -668,7 +680,24 @@ public class is17222761 extends JFrame {
             timeToCalculate.setText("Time: " + time1 + " milliseconds");
             timeToCalculate2.setText("Time: " + time2 + " milliseconds");
             graphPainter2.setOrdering(ordering2);
-
+            if (total1<total2){
+				compareTimes=("Best Time: Sum of Edge Lengths is quicker than TimGA by "+ (total2-total1) + " milliseconds");
+			}
+			else if (total2<total1){
+				compareTimes=("Best Time: TimGA is quicker than Sum of Edge Lengths by "+ (total1-total2) + "milliseconds");
+			}
+			else{
+				compareTimes=("Best Time: The Algorithms run at the same speed");
+			}
+			if (bestGeneration1<bestGeneration2){
+				compareGens=("Best Generation: Sum of Edge Lengths is " + (bestGeneration2-bestGeneration1) +" Generations quicker than TimGA");
+			}
+			else if (bestGeneration2<bestGeneration1){
+				compareGens=("Best Generation: TimGA is " + (bestGeneration1-bestGeneration2) +" Generations quicker than Sum of Edge Lengths");
+			}
+			else{
+				compareGens=("Best Generation: The Algorithms Have the Same Generation Number: "+bestGeneration1);
+			}
             repaint();
         }
 

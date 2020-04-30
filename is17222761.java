@@ -20,15 +20,15 @@ public class is17222761 extends JFrame {
     private static final ArrayList<Vertice> verts = new ArrayList<>();
     private static final ArrayList<OrderingCost> nextGenOrders = new ArrayList<>(); //used for fitnes function 1
     private static final ArrayList<OrderingCost> nextGenOrders2 = new ArrayList<>(); //used for fitnes function 2
-    public static int bestGeneration1 = 0;
-    public static int bestGeneration2 = 0;
-    public static double bestScore1;
-    public static double bestScore2;
-    static long duration1 = 0;
-    static long duration2 = 0;
-    static double total1 = 0;
-    static double total2 = 0;
-    static double milliseconds = 1000000.0;
+    private static int bestGeneration1 = 0;
+    private static int bestGeneration2 = 0;
+    private static double bestScore1;
+    private static double bestScore2;
+    private static long duration1 = 0;
+    private static long duration2 = 0;
+    private static double total1 = 0;
+    private static double total2 = 0;
+    private static double milliseconds = 1000000.0;
     private static int[][] adjacencyMatrix;
     private static double chunk;
     private static int populationSize;
@@ -61,13 +61,11 @@ public class is17222761 extends JFrame {
 
         fillVerts();
         generateFirstGen();
-        printOrderings(genOrders);
-        //generateNextGen();
+        //printOrderings(genOrders);
 
         gui = new GUI(genOrders.get(0), genOrders2.get(0), currentGeneration, chunk, new ButtonListener());
     }
 
-    //returns a positive integer
     public static int getPositiveInput(String message, String errorMessage, int greaterThan, int lessThan) {
         String tmp = message;
         int input;
@@ -153,26 +151,6 @@ public class is17222761 extends JFrame {
     }
 
     public static void generateFirstGen() {
-		/*ArrayList<Vertice> testList = new ArrayList<>();
-		testList.add(verts.get(0));
-		testList.add(verts.get(1));
-		testList.add(verts.get(2));
-		testList.add(verts.get(3));
-		testList.add(verts.get(4));
-		testList.add(verts.get(5));
-		testList.add(verts.get(6));
-		testList.add(verts.get(7));
-		testList.add(verts.get(8));
-		testList.add(verts.get(9));
-		testList.add(verts.get(10));
-		testList.add(verts.get(11));
-		testList.add(verts.get(12));
-		testList.add(verts.get(13));
-		testList.add(verts.get(14));
-		testList.add(verts.get(15));
-		testList.add(verts.get(16));
-		testList.add(verts.get(17));*/
-
         for (int i = 0; i < populationSize; i++) {
             Collections.shuffle(verts);
             OrderingCost ordering = new OrderingCost((ArrayList) verts.clone(), 0);
@@ -218,12 +196,10 @@ public class is17222761 extends JFrame {
 
         minNodeDistSum = (ordering.getOrdering().size() * Math.pow(minNodeDist, 2));
         double deviation = 0;
-        //double lalala =0;
 
         for (int i = 0; i < ordering.getOrdering().size(); i++) {
             Vertice vertOne = ordering.getOrdering().get(i);
             ArrayList<Integer> connections = vertOne.getConnections();
-
             for (Integer vertNumber : connections) {
                 if (vertOne.getNumber() < vertNumber) {
                     Vertice v = null;
@@ -231,33 +207,24 @@ public class is17222761 extends JFrame {
                         if (vertNumber == ordering.getOrdering().get(loop).getNumber())
                             v = ordering.getOrdering().get(loop);
                     }
-
                     double[] vertX = coordinates.get(vertOne.getNumber());
                     double[] vertY = coordinates.get(v.getNumber());
                     tmpDist = calculateDistance(vertX[0], vertX[1], vertY[0], vertY[1]);
-                    //	System.out.println("Node1:"+vertOne.getNumber()+" Node2:"+v.getNumber()+" distance between:"+ tmpDist);
-                    //System.out.println("Edge distance:"+tmpDist+" minDistanceEdge:"+ minDistanceEdge);
                     deviation += Math.pow((tmpDist - minNodeDist), 2);
-                    //		System.out.println("Deviation:"+Math.pow((tmpDist - minNodeDist), 2));
                 }
             }
-            //deviation += Math.pow((lalala - minNodeDist), 2);
-            //lalala=0;
         }
 
-        //System.out.println("DEVIATION1:"+deviation);
         deviation = Math.sqrt((deviation / (ordering.getOrdering().size() - 1)));
-        //System.out.println("DEVIATION2:"+deviation);
         totalEdgeCrossings = getEdgeCrossings(ordering);
 
         double fitness = Math.abs((2 * minDistSum) - (2 * deviation) - (2.5 * (deviation / minNodeDistSum))
                 + (0.25 * (ordering.getOrdering().size() * (Math.pow(minNodeDistSum, 2)))) - (1 * 7200));//totalEdgeCrossings));
-        //System.out.println("Eval:"+fitness+" totalDist:"+minDistSum+" std:"+deviation+" minDist:"+ minNodeDistSum+" length:"+ ordering.getOrdering().size()+ " edgeCrossings:"+ 7200);
-        //System.out.println();
+        
         cost = fitness;
         long endTime = System.nanoTime();
         duration2 = (endTime - startTime);
-        total2 += (double) duration2 / milliseconds; //Milliseconds
+        total2 += (double) duration2 / milliseconds;
         return cost;
     }
 
@@ -320,7 +287,7 @@ public class is17222761 extends JFrame {
                     }
 
                     double[] vertX = coordinates.get(vertOne.getNumber());
-                    double[] vertY = coordinates.get(v.getNumber()); //THESE VALUES ARE WRONG
+                    double[] vertY = coordinates.get(v.getNumber());
                     double distance = calculateDistance(vertX[0], vertX[1], vertY[0], vertY[1]);
                     cost += distance;
                 }
@@ -329,7 +296,7 @@ public class is17222761 extends JFrame {
 
         long endTime = System.nanoTime();
         duration1 = (endTime - startTime);
-        total1 += (double) duration1 / milliseconds; //Milliseconds
+        total1 += (double) duration1 / milliseconds;
         return cost;
     }
 
@@ -346,7 +313,6 @@ public class is17222761 extends JFrame {
             genOrders.add(genOrders.get(i));
             genOrders2.remove(genOrders2.size() - (i + 1));
             genOrders2.add(genOrders2.get(i));
-            //genOrders2.set(i,genOrders2.get(genOrders2.size()-(i+1)));
         }
     }
 
@@ -389,7 +355,6 @@ public class is17222761 extends JFrame {
             }
         }
 
-        //currentGen is empty, set currentGen=nextGen and clear nextGen
         genOrders = (ArrayList) nextGenOrders.clone();
         nextGenOrders.clear();
         genOrders2 = (ArrayList) nextGenOrders2.clone();
@@ -398,7 +363,6 @@ public class is17222761 extends JFrame {
         //order the orderings s1,s2,s3 and replace s3 with s1
         orderOrderings();
         removeBottomThird();
-        //printOrderings(genOrders);
     }
 
     public static void reproduction() {
@@ -553,7 +517,6 @@ public class is17222761 extends JFrame {
             if (e.getActionCommand().equals("Next Generation")) {
                 if (currentGeneration < numberOfGeneration) {
                     generateNextGen();
-                    //printOrderings(genOrders);
                     OrderingCost o = genOrders.get(0);
                     OrderingCost o2 = genOrders2.get(0);
                     gui.update(o, o2, o.getCost(), o2.getCost(), ++currentGeneration, total1, total2);
@@ -645,19 +608,16 @@ public class is17222761 extends JFrame {
         private static final int WIDTH = 1000;
         private static final int HEIGHT = 600;
         private static final String TITLE = "Graph Visualisation";
-
         private final double chunk;
         private final OrderingCost bestOrdering;
         private final OrderingCost bestOrdering2;
         private final int generations;
-
         private Painter graphPainter;
         private JLabel orderingLabel;
         private JLabel currentGenerationLabel;
         private JLabel bestGenerationLabel1;
         private JLabel bestOrderingFitnessCost;
         private JLabel timeToCalculate;
-
         private Painter graphPainter2;
         private JLabel orderingLabel2;
         private JLabel currentGenerationLabel2;

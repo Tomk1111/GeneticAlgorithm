@@ -170,7 +170,7 @@ public class is17222761 extends JFrame {
         double minDist = 1;
         double minDistSum = 0;
         double minNodeDist = 1;
-        int totalEdgeCrossings = 0;
+        double totalEdgeCrossings = 0;
         double minNodeDistSum;
         Map<Integer, double[]> coordinates = ordering.generateCoordinates(chunk);
 
@@ -193,7 +193,7 @@ public class is17222761 extends JFrame {
 
         minNodeDistSum = (ordering.getOrdering().size() * Math.pow(minNodeDist, 2));
         double deviation = 0;
-
+		int counter = 0;
         for (int i = 0; i < ordering.getOrdering().size(); i++) {
             Vertice vertOne = ordering.getOrdering().get(i);
             ArrayList<Integer> connections = vertOne.getConnections();
@@ -208,15 +208,17 @@ public class is17222761 extends JFrame {
                     double[] vertY = coordinates.get(v.getNumber());
                     tmpDist = calculateDistance(vertX[0], vertX[1], vertY[0], vertY[1]);
                     deviation += Math.pow((tmpDist - minNodeDist), 2);
+					counter++;
                 }
             }
         }
 
         deviation = Math.sqrt((deviation / (ordering.getOrdering().size() - 1)));
-        totalEdgeCrossings = getEdgeCrossings(ordering);
+		//https://en.wikipedia.org/wiki/Crossing_number_(graph_theory)
+        totalEdgeCrossings = ((ordering.getOrdering().size()/2) * ((ordering.getOrdering().size()-1)/2) * ((counter/2)) * ((--counter)/2));
 
         double fitness = Math.abs((2 * minDistSum) - (2 * deviation) - (2.5 * (deviation / minNodeDistSum))
-                + (0.25 * (ordering.getOrdering().size() * (Math.pow(minNodeDistSum, 2)))) - (1 * 7200));//totalEdgeCrossings));
+                + (0.25 * (ordering.getOrdering().size() * (Math.pow(minNodeDistSum, 2)))) - (1 * totalEdgeCrossings));
         
         cost = fitness;
         long endTime = System.nanoTime();

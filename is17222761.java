@@ -24,11 +24,9 @@ public class is17222761 extends JFrame {
     private static int bestGeneration2 = 0;
     private static double bestScore1;
     private static double bestScore2;
-    private static long duration1 = 0;
-    private static long duration2 = 0;
     private static double total1 = 0;
     private static double total2 = 0;
-    private static double milliseconds = 1000000.0;
+    private static final double milliseconds = 1000000.0;
     private static int[][] adjacencyMatrix;
     private static double chunk;
     private static int populationSize;
@@ -40,7 +38,6 @@ public class is17222761 extends JFrame {
     private static GUI gui;
     private static ArrayList<OrderingCost> genOrders = new ArrayList<>(); //used for fitness function 1
     private static ArrayList<OrderingCost> genOrders2 = new ArrayList<>(); //used for fitness function 2
-    private int[] ordering;
 
     public static void main(String[] args) {
         String message = "Mutation rate: Please enter a positive integer in the range [0,100]";
@@ -223,7 +220,7 @@ public class is17222761 extends JFrame {
         
         cost = fitness;
         long endTime = System.nanoTime();
-        duration2 = (endTime - startTime);
+        long duration2 = (endTime - startTime);
         total2 += (double) duration2 / milliseconds;
         return cost;
     }
@@ -295,7 +292,7 @@ public class is17222761 extends JFrame {
         }
 
         long endTime = System.nanoTime();
-        duration1 = (endTime - startTime);
+        long duration1 = (endTime - startTime);
         total1 += (double) duration1 / milliseconds;
         return cost;
     }
@@ -611,7 +608,6 @@ public class is17222761 extends JFrame {
         private final double chunk;
         private final OrderingCost bestOrdering;
         private final OrderingCost bestOrdering2;
-        private final int generations;
         private Painter graphPainter;
         private JLabel orderingLabel;
         private JLabel currentGenerationLabel;
@@ -631,7 +627,6 @@ public class is17222761 extends JFrame {
             this.bestOrdering = bestOrdering;
             this.bestOrdering2 = bestOrdering2;
             this.chunk = chunk;
-            this.generations = generations;
             setSize(WIDTH, HEIGHT);
             setDefaultCloseOperation(EXIT_ON_CLOSE);
             initMainPanel(listener);

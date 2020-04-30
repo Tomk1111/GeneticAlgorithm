@@ -521,6 +521,9 @@ public class is17222761 extends JFrame {
             } else if (e.getActionCommand().equals("Last Generation")) {
                 for (; currentGeneration < numberOfGeneration; ++currentGeneration) {
                     generateNextGen();
+                    OrderingCost o = genOrders.get(0);
+                    OrderingCost o2 = genOrders2.get(0);
+                    gui.update(o, o2, o.getCost(), o2.getCost(), ++currentGeneration, total1, total2);
                 }
                 OrderingCost o = genOrders.get(0);
                 OrderingCost o2 = genOrders2.get(0);
